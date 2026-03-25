@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Checkout & Payment — Verdora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gd:#0d3314;--gdk:#1b5e20;--gm:#2e7d32;--g:#43a047;--gl:#81c784;--gp:#e8f5e9;
+  --gold:#f9a825;--ora:#e65100;--slate:#1c313a;--cream:#fdfaf4;--w:#fff;
+  --td:#1a2e1a;--tm:#4a6741;--tl:#7a9a77;
+  --fd:'Playfair Display',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --s1:0 2px 12px rgba(0,0,0,.07);--s2:0 8px 32px rgba(0,0,0,.11);--s3:0 20px 60px rgba(0,0,0,.15);
+  --r:18px;--tr:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--td);overflow-x:hidden;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--fb);cursor:pointer}
+input,select{font-family:var(--fb)}
+
+/* NAV */
+nav{
+  position:sticky;top:0;left:0;right:0;z-index:300;
+  height:68px;padding:0 4%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(253,250,244,.94);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(102,187,106,.18);
+  box-shadow:0 2px 20px rgba(0,0,0,.07);
+}
+.logo{font-family:var(--fd);font-size:1.45rem;font-weight:900;color:var(--gdk)}
+.logo span{color:var(--g)}
+.nav-r{display:flex;align-items:center;gap:14px}
+.nav-back{display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;color:var(--gm);padding:8px 16px;border:1.5px solid rgba(46,125,50,.3);border-radius:50px;transition:all var(--tr);background:none;cursor:pointer}
+.nav-back:hover{background:var(--gp);border-color:var(--g)}
+.nav-secure{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--tl);font-weight:500}
+
+/* PROGRESS STEPPER */
+.stepper{background:var(--w);border-bottom:1px solid rgba(102,187,106,.12);padding:18px 4%;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.steps{display:flex;align-items:center;justify-content:center;gap:0;max-width:520px;margin:0 auto}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 20px);width:calc(100% - 40px);height:2px;background:var(--gp)}
+.step.done:not(:last-child)::after,.step.active:not(:last-child)::after{background:linear-gradient(90deg,var(--g),var(--gp))}
+.step.done:not(:last-child)::after{background:var(--g)}
+.sicon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;border:2px solid var(--gp);background:var(--w);color:var(--tl);transition:all var(--tr);position:relative;z-index:1}
+.step.done .sicon{background:var(--g);border-color:var(--g);color:#fff}
+.step.active .sicon{background:var(--gdk);border-color:var(--gdk);color:#fff;box-shadow:0 0 0 4px rgba(46,125,50,.18)}
+.slabel{font-size:.68rem;font-weight:600;color:var(--tl);letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+.step.active .slabel{color:var(--gdk)}
+.step.done .slabel{color:var(--g)}
+
+/* BANNER STRIP */
+.pay-banner{background:linear-gradient(135deg,#e8f5e9,#f0faf0);padding:28px 4% 20px;border-bottom:1px solid rgba(102,187,106,.1)}
+.pay-banner-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.pay-title{font-family:var(--fd);font-size:clamp(1.4rem,2.8vw,2rem);font-weight:900;color:var(--gd)}
+.pay-title span{color:var(--g);font-style:italic}
+.trust-badges{display:flex;gap:14px;flex-wrap:wrap}
+.tbadge{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--tm);background:var(--w);padding:5px 12px;border-radius:50px;border:1px solid rgba(102,187,106,.2);box-shadow:var(--s1)}
+
+/* MAIN LAYOUT */
+.pay-layout{display:grid;grid-template-columns:1fr 380px;gap:28px;max-width:1100px;margin:0 auto;padding:28px 4% 60px}
+
+/* FORM CARD */
+.fc-card{background:var(--w);border-radius:var(--r);box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);overflow:hidden;margin-bottom:20px}
+.fc-head{padding:18px 22px;border-bottom:1px solid var(--gp);display:flex;align-items:center;gap:10px}
+.fc-head-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gm));color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fc-head h3{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--td)}
+.fc-body{padding:22px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.frow.full{grid-template-columns:1fr}
+.frow.three{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:.73rem;font-weight:700;color:var(--tm);letter-spacing:.4px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{
+  padding:11px 14px;border-radius:11px;border:1.5px solid rgba(102,187,106,.22);
+  background:rgba(253,250,244,.6);font-size:.88rem;color:var(--td);outline:none;
+  transition:all var(--tr);width:100%
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--g);background:var(--w);box-shadow:0 0 0 3px rgba(67,160,71,.1)}
+.fg input::placeholder{color:rgba(122,154,119,.5)}
+.fg textarea{resize:vertical;min-height:72px}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:38px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;opacity:.5}
+
+/* PAYMENT METHODS */
+.pm-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.pm-opt{padding:14px 16px;border-radius:13px;border:2px solid rgba(102,187,106,.18);background:var(--w);cursor:pointer;transition:all var(--tr);display:flex;align-items:center;gap:10px;position:relative}
+.pm-opt:hover{border-color:rgba(46,125,50,.35);background:var(--gp)}
+.pm-opt.sel{border-color:var(--g);background:linear-gradient(135deg,rgba(232,245,233,.8),rgba(240,250,240,.9));box-shadow:0 0 0 3px rgba(67,160,71,.12)}
+.pm-radio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(102,187,106,.4);flex-shrink:0;transition:all var(--tr);display:flex;align-items:center;justify-content:center}
+.pm-opt.sel .pm-radio{border-color:var(--g);background:var(--g)}
+.pm-opt.sel .pm-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+.pm-icon{font-size:1.4rem;flex-shrink:0}
+.pm-info{flex:1}
+.pm-name{font-size:.84rem;font-weight:700;color:var(--td)}
+.pm-sub{font-size:.68rem;color:var(--tl)}
+.pm-badge-new{position:absolute;top:8px;right:8px;font-size:.58rem;font-weight:700;background:var(--ora);color:#fff;padding:2px 6px;border-radius:50px}
+
+/* CARD FORM */
+.card-panel{background:var(--gp);border-radius:13px;padding:18px;margin-top:4px;border:1px solid rgba(102,187,106,.15)}
+.card-preview{background:linear-gradient(135deg,var(--gd),var(--gm));border-radius:14px;padding:20px;margin-bottom:16px;color:#fff;position:relative;overflow:hidden;min-height:120px}
+.card-preview::before{content:'';position:absolute;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%;top:-60px;right:-60px}
+.card-preview::after{content:'';position:absolute;width:140px;height:140px;background:rgba(255,255,255,.04);border-radius:50%;bottom:-40px;left:30px}
+.cp-chip{width:32px;height:24px;background:linear-gradient(135deg,#f9a825,#e65100);border-radius:4px;margin-bottom:14px;position:relative;z-index:1}
+.cp-num{font-size:1.1rem;font-weight:500;letter-spacing:3px;margin-bottom:14px;position:relative;z-index:1;font-family:monospace}
+.cp-row{display:flex;justify-content:space-between;position:relative;z-index:1}
+.cp-lbl{font-size:.6rem;opacity:.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.cp-val{font-size:.82rem;font-weight:600}
+.cp-logo{position:absolute;bottom:16px;right:16px;font-size:1.6rem;opacity:.7;z-index:1}
+
+/* UPI / OTHER PANELS */
+.upi-panel{margin-top:4px}
+.upi-input-row{display:flex;gap:10px;align-items:flex-end}
+.upi-input-row .fg{flex:1}
+.upi-verify{padding:11px 18px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--g),var(--gm));color:#fff;font-size:.84rem;font-weight:700;cursor:pointer;transition:all var(--tr);white-space:nowrap;box-shadow:0 4px 12px rgba(46,125,50,.28)}
+.upi-verify:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,125,50,.38)}
+.upi-apps{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.upi-app{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(102,187,106,.2);background:var(--w);cursor:pointer;transition:all var(--tr);font-size:.7rem;font-weight:600;color:var(--tm)}
+.upi-app:hover{border-color:var(--g);background:var(--gp)}
+.upi-app span:first-child{font-size:1.4rem}
+
+/* COD PANEL */
+.cod-panel{background:var(--gp);border-radius:13px;padding:16px;text-align:center;border:1px solid rgba(102,187,106,.2)}
+.cod-panel .cod-icon{font-size:2.5rem;margin-bottom:8px}
+.cod-panel p{font-size:.84rem;color:var(--tm);line-height:1.6}
+
+/* ORDER SUMMARY SIDEBAR */
+.os-card{background:var(--w);border-radius:var(--r);box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);overflow:hidden;position:sticky;top:84px}
+.os-head{padding:16px 20px;border-bottom:1px solid var(--gp);display:flex;align-items:center;justify-content:space-between}
+.os-head h3{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--td)}
+.os-edit{font-size:.78rem;color:var(--gm);font-weight:600;cursor:pointer;transition:color var(--tr);background:none;border:none;padding:0}
+.os-edit:hover{color:var(--gdk)}
+.os-items{padding:12px 20px;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--gp) transparent}
+.os-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(102,187,106,.08)}
+.os-item:last-child{border-bottom:none}
+.osi-icon{width:38px;height:38px;border-radius:9px;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.osi-info{flex:1;min-width:0}
+.osi-name{font-size:.8rem;font-weight:600;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.osi-unit{font-size:.68rem;color:var(--tl)}
+.osi-qty{font-size:.72rem;color:var(--tl);font-weight:500}
+.osi-price{font-size:.84rem;font-weight:700;color:var(--gdk);white-space:nowrap}
+.os-pricing{padding:14px 20px;border-top:1px solid var(--gp)}
+.pr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:.82rem}
+.pr-row span:first-child{color:var(--tm)}
+.pr-row span:last-child{font-weight:600;color:var(--td)}
+.pr-row.disc span:last-child{color:var(--g)}
+.pr-total{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:linear-gradient(135deg,var(--gp),rgba(232,245,233,.5));border-top:2px solid rgba(102,187,106,.2)}
+.pr-total span:first-child{font-size:.9rem;font-weight:700;color:var(--td)}
+.pr-total span:last-child{font-size:1.15rem;font-weight:700;color:var(--gdk)}
+.os-delivery{padding:10px 20px;background:rgba(249,168,37,.07);border-top:1px solid rgba(249,168,37,.2);display:flex;align-items:center;gap:7px;font-size:.75rem;color:#856b00;font-weight:500}
+.coupon-wrap{padding:12px 20px;border-top:1px solid var(--gp)}
+.coupon-row{display:flex;gap:8px}
+.coupon-inp{flex:1;padding:9px 12px;border-radius:10px;border:1.5px dashed rgba(102,187,106,.35);background:var(--gp);font-size:.82rem;color:var(--td);outline:none;transition:all var(--tr)}
+.coupon-inp:focus{border-color:var(--g);border-style:solid}
+.coupon-btn{padding:9px 16px;border:none;border-radius:10px;background:var(--gm);color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;transition:all var(--tr)}
+.coupon-btn:hover{background:var(--gdk)}
+
+/* PAY BUTTON */
+.pay-btn-wrap{padding:16px 20px}
+.pay-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--g),var(--gdk));color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 6px 24px rgba(46,125,50,.35);display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+.pay-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);pointer-events:none}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(46,125,50,.45)}
+.pay-btn:active{transform:translateY(0);box-shadow:0 4px 14px rgba(46,125,50,.3)}
+.pay-btn.loading{pointer-events:none;opacity:.8}
+.pay-secure-note{text-align:center;font-size:.72rem;color:var(--tl);padding:0 20px 16px;display:flex;align-items:center;justify-content:center;gap:5px}
+
+/* SUCCESS OVERLAY */
+.success-overlay{position:fixed;inset:0;background:rgba(13,51,20,.92);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s ease;backdrop-filter:blur(8px)}
+.success-overlay.on{opacity:1;pointer-events:all}
+.success-box{background:var(--w);border-radius:28px;padding:44px 36px;text-align:center;max-width:440px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.3);animation:popIn .45s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.success-anim{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gm));display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 20px;box-shadow:0 8px 28px rgba(46,125,50,.35);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 8px 28px rgba(46,125,50,.35)}50%{box-shadow:0 8px 40px rgba(46,125,50,.6)}}
+.success-box h2{font-family:var(--fd);font-size:1.7rem;font-weight:900;color:var(--gd);margin-bottom:8px}
+.success-box p{font-size:.88rem;color:var(--tm);line-height:1.6;margin-bottom:22px}
+.order-id-box{background:var(--gp);border-radius:12px;padding:12px 20px;margin-bottom:22px;font-size:.82rem;color:var(--tm)}
+.order-id-box strong{color:var(--gdk);font-size:.9rem;font-family:monospace}
+.track-btn{width:100%;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--g),var(--gdk));color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 6px 20px rgba(46,125,50,.32);display:flex;align-items:center;justify-content:center;gap:8px}
+.track-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(46,125,50,.42)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--gdk);color:#fff;padding:11px 22px;border-radius:50px;font-size:.84rem;font-weight:500;z-index:600;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:7px;white-space:nowrap;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* ANIM */
+@keyframes cin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fc-card{animation:cin .35s ease both}
+.fc-card:nth-child(2){animation-delay:.07s}
+.fc-card:nth-child(3){animation-delay:.14s}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .pay-layout{grid-template-columns:1fr;padding:16px}
+  .os-card{position:relative;top:0}
+  .pm-opts{grid-template-columns:1fr}
+  .frow{grid-template-columns:1fr}
+  .frow.three{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .frow.three{grid-template-columns:1fr}
+  .trust-badges{display:none}
+  .card-preview{min-height:100px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="productss.html" class="logo">Ver<span>dora</span></a>
+  <div class="nav-r">
+    <button class="nav-back" onclick="window.history.back()">← Back to Cart</button>
+    <div class="nav-secure">🔒 Secure Checkout</div>
+  </div>
+</nav>
+
+<!-- PROGRESS STEPPER -->
+<div class="stepper">
+  <div class="steps">
+    <div class="step done">
+      <div class="sicon">✓</div>
+      <div class="slabel">Cart</div>
+    </div>
+    <div class="step active">
+      <div class="sicon">2</div>
+      <div class="slabel">Payment</div>
+    </div>
+    <div class="step">
+      <div class="sicon">3</div>
+      <div class="slabel">Tracking</div>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER -->
+<div class="pay-banner">
+  <div class="pay-banner-in">
+    <h1 class="pay-title">Secure <span>Checkout</span></h1>
+    <div class="trust-badges">
+      <div class="tbadge">🔒 SSL Encrypted</div>
+      <div class="tbadge">✅ 100% Safe</div>
+      <div class="tbadge">🚚 Free Delivery ≥₹499</div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="pay-layout">
+  <!-- LEFT COLUMN -->
+  <div>
+    <!-- DELIVERY ADDRESS -->
+    <div class="fc-card">
+      <div class="fc-head">
+        <div class="fc-head-num">1</div>
+        <h3>Delivery Address</h3>
+      </div>
+      <div class="fc-body">
+        <div class="frow">
+          <div class="fg">
+            <label>First Name</label>
+            <div class="input-wrap"><input type="text" placeholder="Arjun" id="fname"><span class="input-icon">👤</span></div>
+          </div>
+          <div class="fg">
+            <label>Last Name</label>
+            <input type="text" placeholder="Kumar">
+          </div>
+        </div>
+        <div class="frow full">
+          <div class="fg">
+            <label>Mobile Number</label>
+            <div class="input-wrap"><input type="tel" placeholder="+91 98765 43210" id="phone"><span class="input-icon">📱</span></div>
+          </div>
+        </div>
+        <div class="frow full">
+          <div class="fg">
+            <label>Flat / House No. / Building</label>
+            <input type="text" placeholder="12A, Green Meadows Apartments">
+          </div>
+        </div>
+        <div class="frow full">
+          <div class="fg">
+            <label>Street / Area / Locality</label>
+            <input type="text" placeholder="Gandhipuram, Near Civil Aerodrome">
+          </div>
+        </div>
+        <div class="frow three">
+          <div class="fg">
+            <label>City</label>
+            <input type="text" placeholder="Coimbatore" value="Coimbatore">
+          </div>
+          <div class="fg">
+            <label>State</label>
+            <select>
+              <option>Tamil Nadu</option><option>Karnataka</option><option>Kerala</option><option>Maharashtra</option><option>Delhi</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>PIN Code</label>
+            <input type="text" placeholder="641001" maxlength="6">
+          </div>
+        </div>
+        <div class="frow full">
+          <div class="fg">
+            <label>Delivery Notes (Optional)</label>
+            <textarea placeholder="Gate code, landmark, or special instructions…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT METHOD -->
+    <div class="fc-card">
+      <div class="fc-head">
+        <div class="fc-head-num">2</div>
+        <h3>Payment Method</h3>
+      </div>
+      <div class="fc-body">
+        <div class="pm-opts">
+          <div class="pm-opt sel" data-pm="card" onclick="selectPM('card',this)">
+            <div class="pm-radio"></div>
+            <div class="pm-icon">💳</div>
+            <div class="pm-info"><div class="pm-name">Credit / Debit Card</div><div class="pm-sub">Visa, Mastercard, RuPay</div></div>
+          </div>
+          <div class="pm-opt" data-pm="upi" onclick="selectPM('upi',this)">
+            <div class="pm-radio"></div>
+            <div class="pm-icon">📲</div>
+            <div class="pm-info"><div class="pm-name">UPI</div><div class="pm-sub">GPay, PhonePe, Paytm</div></div>
+            <span class="pm-badge-new">Popular</span>
+          </div>
+          <div class="pm-opt" data-pm="nb" onclick="selectPM('nb',this)">
+            <div class="pm-radio"></div>
+            <div class="pm-icon">🏦</div>
+            <div class="pm-info"><div class="pm-name">Net Banking</div><div class="pm-sub">All major banks</div></div>
+          </div>
+          <div class="pm-opt" data-pm="cod" onclick="selectPM('cod',this)">
+            <div class="pm-radio"></div>
+            <div class="pm-icon">💵</div>
+            <div class="pm-info"><div class="pm-name">Cash on Delivery</div><div class="pm-sub">Pay when delivered</div></div>
+          </div>
+        </div>
+
+        <!-- CARD PANEL -->
+        <div id="panel-card">
+          <div class="card-panel">
+            <div class="card-preview">
+              <div class="cp-chip"></div>
+              <div class="cp-num" id="cp-num">•••• •••• •••• ••••</div>
+              <div class="cp-row">
+                <div><div class="cp-lbl">Card Holder</div><div class="cp-val" id="cp-holder">YOUR NAME</div></div>
+                <div><div class="cp-lbl">Expires</div><div class="cp-val" id="cp-exp">MM / YY</div></div>
+              </div>
+              <div class="cp-logo">💳</div>
+            </div>
+            <div class="frow full" style="margin-bottom:12px">
+              <div class="fg">
+                <label>Card Number</label>
+                <div class="input-wrap">
+                  <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="card-num" oninput="fmtCard(this)">
+                  <span class="input-icon">💳</span>
+                </div>
+              </div>
+            </div>
+            <div class="frow full" style="margin-bottom:12px">
+              <div class="fg">
+                <label>Name on Card</label>
+                <input type="text" placeholder="ARJUN KUMAR" id="card-name" oninput="document.getElementById('cp-holder').textContent=this.value.toUpperCase()||'YOUR NAME'">
+              </div>
+            </div>
+            <div class="frow">
+              <div class="fg">
+                <label>Expiry Date</label>
+                <input type="text" placeholder="MM / YY" maxlength="7" id="card-exp" oninput="fmtExp(this)">
+              </div>
+              <div class="fg">
+                <label>CVV</label>
+                <div class="input-wrap">
+                  <input type="password" placeholder="•••" maxlength="3">
+                  <span class="input-icon">🔒</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPI PANEL -->
+        <div id="panel-upi" style="display:none" class="upi-panel">
+          <div class="upi-apps">
+            <div class="upi-app"><span>📱</span>GPay</div>
+            <div class="upi-app"><span>📲</span>PhonePe</div>
+            <div class="upi-app"><span>💸</span>Paytm</div>
+            <div class="upi-app"><span>🏦</span>BHIM</div>
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;color:var(--tl);text-align:center;font-weight:500;margin-bottom:10px">— or enter UPI ID —</div>
+          <div class="upi-input-row">
+            <div class="fg">
+              <label>UPI ID</label>
+              <input type="text" placeholder="yourname@upi">
+            </div>
+            <button class="upi-verify">Verify</button>
+          </div>
+        </div>
+
+        <!-- NET BANKING PANEL -->
+        <div id="panel-nb" style="display:none">
+          <div class="frow full" style="margin-top:4px">
+            <div class="fg">
+              <label>Select Bank</label>
+              <select><option>State Bank of India</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Kotak Mahindra Bank</option><option>Punjab National Bank</option><option>Bank of Baroda</option><option>Other</option></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- COD PANEL -->
+        <div id="panel-cod" style="display:none">
+          <div class="cod-panel">
+            <div class="cod-icon">💵</div>
+            <p>Pay cash when your fresh produce arrives at your doorstep. Please keep exact change ready for a seamless handover.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY SIDEBAR -->
+  <div>
+    <div class="os-card">
+      <div class="os-head">
+        <h3>Order Summary</h3>
+        <button class="os-edit" onclick="window.history.back()">Edit Cart</button>
+      </div>
+      <div class="os-items" id="os-items">
+        <!-- Populated by JS -->
+      </div>
+      <div class="coupon-wrap">
+        <div class="coupon-row">
+          <input class="coupon-inp" type="text" placeholder="🎟 Enter coupon code">
+          <button class="coupon-btn">Apply</button>
+        </div>
+      </div>
+      <div class="os-pricing">
+        <div class="pr-row"><span>Subtotal (<span id="item-count">0</span> items)</span><span id="sub-total">₹0</span></div>
+        <div class="pr-row disc"><span>Discount</span><span>-₹0</span></div>
+        <div class="pr-row"><span>Delivery</span><span id="del-charge">₹40</span></div>
+      </div>
+      <div class="pr-total">
+        <span>Total Payable</span>
+        <span id="grand-total">₹0</span>
+      </div>
+      <div class="os-delivery" id="del-note">🚚 Add ₹499 to unlock FREE delivery</div>
+      <div class="pay-btn-wrap">
+        <button class="pay-btn" id="pay-btn" onclick="handlePay()">
+          <span id="pay-btn-text">🔒 Pay ₹0 Securely</span>
+        </button>
+        <div class="pay-secure-note">🔐 256-bit SSL encrypted · PCI DSS compliant</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-box">
+    <div class="success-anim">🌿</div>
+    <h2>Order Placed! 🎉</h2>
+    <p>Your fresh farm produce is being prepared for dispatch. You'll receive a confirmation SMS shortly.</p>
+    <div class="order-id-box">Order ID: <strong id="order-id-display">#VRD-2025-00000</strong><br><span style="font-size:.75rem;color:var(--tl);margin-top:4px;display:block">Estimated delivery: Today, 4–6 PM</span></div>
+    <button class="track-btn" onclick="goTrack()">📦 Track My Order →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// Cart data from sessionStorage or demo
+let cart = [];
+try{cart=JSON.parse(sessionStorage.getItem('verdoraCart'))||[];}catch(e){}
+if(!cart.length){
+  cart=[
+    {id:18,name:"Maapillai Samba",cat:"rice",price:90,unit:"kg",e:"🍚",qty:2},
+    {id:7,name:"Carrot",cat:"vegetables",price:40,unit:"kg",e:"🥕",qty:1},
+    {id:11,name:"Apple",cat:"spices",price:120,unit:"250g",e:"🟡",qty:1},
+    {id:24,name:"Spinach",cat:"vegetables",price:15,unit:"bunch",e:"🥬",qty:3},
+  ];
+}
+
+function renderSummary(){
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const del=sub>=499?0:40;
+  const tot=sub+del;
+  const cnt=cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('item-count').textContent=cnt;
+  document.getElementById('sub-total').textContent=`₹${sub}`;
+  document.getElementById('del-charge').textContent=del===0?'FREE 🎉':`₹${del}`;
+  document.getElementById('grand-total').textContent=`₹${tot}`;
+  document.getElementById('pay-btn-text').textContent=`🔒 Pay ₹${tot} Securely`;
+  document.getElementById('del-note').textContent=sub>=499?'🎉 You\'ve unlocked FREE delivery!':'🚚 Add ₹'+(499-sub)+' more for FREE delivery';
+  const items=document.getElementById('os-items');
+  items.innerHTML=cart.map(it=>`<div class="os-item">
+    <div class="osi-icon">${it.e}</div>
+    <div class="osi-info"><div class="osi-name">${it.name}</div><div class="osi-unit">per ${it.unit} · qty ${it.qty}</div></div>
+    <div class="osi-price">₹${it.price*it.qty}</div>
+  </div>`).join('');
+}
+renderSummary();
+
+// PM Selection
+function selectPM(pm,el){
+  document.querySelectorAll('.pm-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  ['card','upi','nb','cod'].forEach(p=>document.getElementById('panel-'+p).style.display='none');
+  document.getElementById('panel-'+pm).style.display='block';
+}
+
+// Card formatting
+function fmtCard(el){
+  let v=el.value.replace(/\D/g,'').substring(0,16);
+  let out='';for(let i=0;i<v.length;i++){if(i&&i%4===0)out+=' ';out+=v[i];}
+  el.value=out;
+  const disp=out.padEnd(19,'•').replace(/[0-9]/g,(m,i)=>i<out.length?m:'•');
+  document.getElementById('cp-num').textContent=out||'•••• •••• •••• ••••';
+}
+function fmtExp(el){
+  let v=el.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>=2)v=v.substring(0,2)+' / '+v.substring(2);
+  el.value=v;
+  document.getElementById('cp-exp').textContent=v||'MM / YY';
+}
+
+// Payment
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.innerHTML='✓ '+msg;t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);
+}
+
+function handlePay(){
+  const fn=document.getElementById('fname').value.trim();
+  const ph=document.getElementById('phone').value.trim();
+  if(!fn){showToast('Please enter your name');return;}
+  if(!ph){showToast('Please enter your phone number');return;}
+  const btn=document.getElementById('pay-btn');
+  btn.classList.add('loading');
+  document.getElementById('pay-btn-text').textContent='Processing…';
+  setTimeout(()=>{
+    const oid='#VRD-2025-'+Math.floor(10000+Math.random()*90000);
+    document.getElementById('order-id-display').textContent=oid;
+    sessionStorage.setItem('verdoraOrderId',oid);
+    sessionStorage.setItem('verdoraCart',JSON.stringify(cart));
+    document.getElementById('success-overlay').classList.add('on');
+  },1800);
+}
+
+function goTrack(){
+  window.location.href='ordertracking.html';
+}
+function initOrderSummary() {
+  const savedCart = localStorage.getItem('agroCart');
+  const itemsContainer = document.getElementById('os-items');
+  
+  if (!savedCart || !itemsContainer) return;
+  
+  const cartData = JSON.parse(savedCart);
+  let subtotal = 0;
+  let totalItems = 0;
+
+  // 1. Render items with images (Amazon/Shopify Style)
+  itemsContainer.innerHTML = cartData.map(item => {
+    subtotal += (item.p * item.q);
+    totalItems += item.q;
+    return `
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(102,187,106,0.1);">
+        <div style="position: relative; flex-shrink: 0;">
+          <img src="${item.img}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gp); background: #fff;">
+          <span style="position: absolute; top: -6px; right: -6px; background: var(--gm); color: white; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            ${item.q}
+          </span>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--td); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.n}</div>
+          <div style="font-size: 11px; color: var(--tl);">Unit: 1 ${item.u}</div>
+        </div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--gdk);">₹${(item.p * item.q).toLocaleString('en-IN')}</div>
+      </div>
+    `;
+  }).join('');
+
+  // 2. Calculate Pricing
+  const delivery = subtotal >= 499 ? 0 : 40;
+  const grandTotal = subtotal + delivery;
+
+  // 3. Update Text Content
+  document.getElementById('item-count').textContent = totalItems;
+  document.getElementById('sub-total').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+  document.getElementById('del-charge').textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
+  document.getElementById('grand-total').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
+  document.getElementById('pay-btn-text').textContent = `🔒 Pay ₹${grandTotal.toLocaleString('en-IN')} Securely`;
+
+  // 4. Update Delivery Note
+  const delNote = document.getElementById('del-note');
+  if (delivery === 0) {
+    delNote.innerHTML = '🎉 You unlocked FREE delivery!';
+    delNote.style.color = 'var(--gm)';
+  } else {
+    delNote.innerHTML = `🚚 Add ₹${499 - subtotal} more to unlock FREE delivery`;
+  }
+}
+
+// Run the function when the page loads
+window.addEventListener('DOMContentLoaded', initOrderSummary);
+</script>
+</body>
+</html>

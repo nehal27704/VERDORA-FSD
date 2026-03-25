@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Live Order Tracking — Verdora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gd:#0d3314;--gdk:#1b5e20;--gm:#2e7d32;--g:#43a047;--gl:#81c784;--gp:#e8f5e9;
+  --gold:#f9a825;--ora:#e65100;--slate:#1c313a;--cream:#fdfaf4;--w:#fff;
+  --td:#1a2e1a;--tm:#4a6741;--tl:#7a9a77;
+  --fd:'Playfair Display',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --s1:0 2px 12px rgba(0,0,0,.07);--s2:0 8px 32px rgba(0,0,0,.11);--s3:0 20px 60px rgba(0,0,0,.15);
+  --r:18px;--tr:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--td);overflow-x:hidden;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--fb);cursor:pointer}
+
+/* NAV */
+nav{
+  position:sticky;top:0;left:0;right:0;z-index:300;
+  height:68px;padding:0 4%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(253,250,244,.94);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(102,187,106,.18);
+  box-shadow:0 2px 20px rgba(0,0,0,.07);
+}
+.logo{font-family:var(--fd);font-size:1.45rem;font-weight:900;color:var(--gdk)}
+.logo span{color:var(--g)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.nav-back{display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;color:var(--gm);padding:8px 16px;border:1.5px solid rgba(46,125,50,.3);border-radius:50px;transition:all var(--tr);background:none;cursor:pointer}
+.nav-back:hover{background:var(--gp);border-color:var(--g)}
+.help-btn{padding:8px 16px;border:none;border-radius:50px;background:linear-gradient(135deg,var(--g),var(--gm));color:#fff;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 3px 10px rgba(46,125,50,.28);transition:all var(--tr)}
+.help-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(46,125,50,.38)}
+
+/* PROGRESS STEPPER */
+.stepper{background:var(--w);border-bottom:1px solid rgba(102,187,106,.12);padding:18px 4%;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.steps{display:flex;align-items:center;justify-content:center;gap:0;max-width:520px;margin:0 auto}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 20px);width:calc(100% - 40px);height:2px;background:var(--gp)}
+.step.done:not(:last-child)::after{background:var(--g)}
+.sicon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;border:2px solid var(--gp);background:var(--w);color:var(--tl);transition:all var(--tr);position:relative;z-index:1}
+.step.done .sicon{background:var(--g);border-color:var(--g);color:#fff}
+.step.active .sicon{background:var(--gdk);border-color:var(--gdk);color:#fff;box-shadow:0 0 0 4px rgba(46,125,50,.18)}
+.slabel{font-size:.68rem;font-weight:600;color:var(--tl);letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+.step.active .slabel{color:var(--gdk)}
+.step.done .slabel{color:var(--g)}
+
+/* HERO STRIP */
+.track-hero{background:linear-gradient(135deg,var(--gd) 0%,var(--gdk) 50%,#1a4f1e 100%);padding:32px 4% 28px;position:relative;overflow:hidden}
+.track-hero::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(102,187,106,.15),transparent 60%);right:-100px;top:-150px;border-radius:50%;pointer-events:none}
+.track-hero::after{content:'🌿';position:absolute;font-size:7rem;bottom:-20px;left:-20px;opacity:.05;pointer-events:none}
+.th-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.th-left{}
+.th-sub{font-size:.72rem;color:rgba(129,199,132,.8);font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.th-title{font-family:var(--fd);font-size:clamp(1.4rem,3vw,2rem);font-weight:900;color:#fff;line-height:1.2}
+.th-title em{color:var(--gl);font-style:italic}
+.th-oid{margin-top:8px;font-size:.82rem;color:rgba(255,255,255,.6)}
+.th-oid strong{color:var(--gl);font-family:monospace}
+.th-eta{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 22px;text-align:center;min-width:160px}
+.eta-label{font-size:.65rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:4px}
+.eta-time{font-family:var(--fd);font-size:1.8rem;font-weight:900;color:#fff;line-height:1;margin-bottom:2px}
+.eta-date{font-size:.75rem;color:rgba(255,255,255,.6)}
+.eta-pulse{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:.72rem;color:var(--gl);font-weight:600}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gl);animation:blink 1.4s ease infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+
+/* MAIN LAYOUT */
+.track-layout{display:grid;grid-template-columns:1fr 360px;gap:24px;max-width:1100px;margin:0 auto;padding:24px 4% 60px}
+
+/* PROGRESS CARD */
+.t-card{background:var(--w);border-radius:var(--r);box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);overflow:hidden;margin-bottom:20px}
+.t-card-head{padding:16px 22px;border-bottom:1px solid var(--gp);display:flex;align-items:center;justify-content:space-between}
+.t-card-head h3{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--td);display:flex;align-items:center;gap:8px}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:var(--gm);padding:3px 10px;border-radius:50px;border:1px solid rgba(46,125,50,.2)}
+
+/* TRACKING TIMELINE */
+.timeline{padding:24px 22px}
+.tl-step{display:flex;gap:16px;padding-bottom:28px;position:relative}
+.tl-step:last-child{padding-bottom:0}
+.tl-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:32px;width:2px;height:calc(100% - 6px);background:var(--gp);border-radius:2px}
+.tl-step.done:not(:last-child)::after{background:var(--g)}
+.tl-step.active:not(:last-child)::after{background:linear-gradient(180deg,var(--g),var(--gp))}
+.tl-icon-wrap{width:32px;height:32px;border-radius:50%;border:2px solid var(--gp);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;position:relative;z-index:1;transition:all var(--tr)}
+.tl-step.done .tl-icon-wrap{background:var(--g);border-color:var(--g);box-shadow:0 0 0 4px rgba(67,160,71,.12)}
+.tl-step.active .tl-icon-wrap{background:var(--gdk);border-color:var(--gdk);box-shadow:0 0 0 6px rgba(46,125,50,.15);animation:ringPulse 2s ease infinite}
+@keyframes ringPulse{0%,100%{box-shadow:0 0 0 6px rgba(46,125,50,.15)}50%{box-shadow:0 0 0 10px rgba(46,125,50,.08)}}
+.tl-step.pending .tl-icon-wrap{opacity:.45}
+.tl-content{flex:1;padding-top:4px}
+.tl-name{font-size:.92rem;font-weight:700;color:var(--td);margin-bottom:2px}
+.tl-step.pending .tl-name{color:var(--tl)}
+.tl-desc{font-size:.78rem;color:var(--tl);line-height:1.5}
+.tl-time{font-size:.7rem;color:var(--tl);font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px}
+.tl-step.done .tl-time{color:var(--g)}
+.tl-step.active .tl-time{color:var(--gm)}
+.tl-step.active .tl-name{color:var(--gdk)}
+.tl-step.active .tl-desc{color:var(--tm)}
+
+/* MAP MOCKUP */
+.map-card{background:var(--w);border-radius:var(--r);box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);overflow:hidden;margin-bottom:20px}
+.map-area{height:280px;background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 30%,#dcedc8 60%,#f1f8e9 100%);position:relative;overflow:hidden}
+/* Road network */
+.road{position:absolute;background:rgba(255,255,255,.7);border-radius:2px}
+.road-h{height:3px}
+.road-v{width:3px}
+/* Map labels */
+.map-label{position:absolute;font-size:.62rem;font-weight:700;color:var(--tm);background:rgba(255,255,255,.85);padding:2px 6px;border-radius:4px;white-space:nowrap}
+/* Pickup marker */
+.map-marker{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:10}
+.mm-icon{width:32px;height:32px;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.mm-tail{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;margin-top:-2px}
+.mm-farm{background:var(--gdk)}
+.mm-farm-tail{border-top:8px solid var(--gdk)}
+.mm-delivery{background:var(--ora)}
+.mm-delivery-tail{border-top:8px solid var(--ora)}
+.mm-rider{background:var(--g);animation:bounce 1.2s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.mm-rider-tail{border-top:8px solid var(--g)}
+/* Dotted route */
+.route-path{position:absolute;width:100%;height:100%;pointer-events:none;overflow:visible}
+/* Progress bar on map */
+.map-progress{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);padding:10px 14px;border-top:1px solid rgba(102,187,106,.15);display:flex;align-items:center;gap:10px}
+.mp-label{font-size:.72rem;font-weight:600;color:var(--tm);white-space:nowrap}
+.mp-bar{flex:1;height:5px;background:var(--gp);border-radius:5px;overflow:hidden}
+.mp-fill{height:100%;background:linear-gradient(90deg,var(--gl),var(--g));border-radius:5px;transition:width 1s ease;width:55%}
+.mp-pct{font-size:.72rem;font-weight:700;color:var(--gm);white-space:nowrap}
+
+/* RIDER CARD */
+.rider-card{background:linear-gradient(135deg,var(--gp),rgba(255,255,255,.9));border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;gap:14px;border:1px solid rgba(102,187,106,.18);box-shadow:var(--s1);margin-bottom:20px}
+.rider-av{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gm));display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;box-shadow:0 4px 14px rgba(46,125,50,.3);border:3px solid #fff}
+.rider-info{flex:1}
+.rider-name{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--td)}
+.rider-role{font-size:.72rem;color:var(--tl);font-weight:500;margin-bottom:6px}
+.rider-rating{display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--gold);font-weight:600}
+.rider-actions{display:flex;gap:8px}
+.ra-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(102,187,106,.3);background:var(--w);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);box-shadow:var(--s1)}
+.ra-btn:hover{background:var(--g);border-color:var(--g);transform:scale(1.1)}
+
+/* SIDE PANEL */
+.os-card{background:var(--w);border-radius:var(--r);box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);overflow:hidden;position:sticky;top:84px}
+.os-head{padding:16px 20px;border-bottom:1px solid var(--gp)}
+.os-head h3{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--td)}
+.os-items{padding:12px 20px;max-height:240px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--gp) transparent}
+.os-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(102,187,106,.08)}
+.os-item:last-child{border-bottom:none}
+.osi-icon{width:38px;height:38px;border-radius:9px;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.osi-info{flex:1;min-width:0}
+.osi-name{font-size:.8rem;font-weight:600;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.osi-unit{font-size:.68rem;color:var(--tl)}
+.osi-price{font-size:.84rem;font-weight:700;color:var(--gdk);white-space:nowrap}
+
+/* DELIVERY INFO */
+.di-card{background:var(--w);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(102,187,106,.1);box-shadow:var(--s1);margin-top:0}
+.di-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(102,187,106,.08)}
+.di-row:last-child{border-bottom:none}
+.di-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.di-info{}
+.di-label{font-size:.68rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.di-val{font-size:.84rem;font-weight:600;color:var(--td);line-height:1.4}
+
+/* HELP CARD */
+.help-card{background:linear-gradient(135deg,rgba(249,168,37,.08),rgba(253,250,244,1));border-radius:var(--r);padding:18px 20px;border:1px solid rgba(249,168,37,.2);box-shadow:var(--s1);margin-top:20px}
+.help-card h4{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--td);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.help-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hbtn{padding:9px 12px;border-radius:10px;border:1.5px solid rgba(102,187,106,.25);background:var(--w);font-size:.78rem;font-weight:600;color:var(--tm);cursor:pointer;transition:all var(--tr);display:flex;align-items:center;justify-content:center;gap:6px}
+.hbtn:hover{border-color:var(--g);background:var(--gp);color:var(--gdk)}
+
+/* FRESH ALERT */
+.fresh-alert{background:linear-gradient(135deg,var(--gd),var(--gm));border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-top:16px;position:relative;overflow:hidden}
+.fresh-alert::before{content:'🌿';position:absolute;right:-10px;bottom:-10px;font-size:3rem;opacity:.1}
+.fa-icon{font-size:1.5rem;flex-shrink:0}
+.fa-text{color:#fff}
+.fa-text p{font-size:.78rem;opacity:.85;line-height:1.5}
+.fa-text strong{font-size:.85rem;display:block;margin-bottom:2px}
+
+/* SHARE / RATE */
+.rate-card{background:var(--w);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(102,187,106,.1);box-shadow:var(--s1);margin-top:20px;text-align:center}
+.rate-card h4{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--td);margin-bottom:12px}
+.stars{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.star{font-size:1.6rem;cursor:pointer;transition:transform .2s ease;filter:grayscale(1);opacity:.4}
+.star:hover,.star.active{filter:none;opacity:1;transform:scale(1.2)}
+.rate-btn{width:100%;padding:11px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--g),var(--gm));color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 4px 12px rgba(46,125,50,.25)}
+.rate-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,125,50,.35)}
+
+/* ANIM */
+@keyframes cin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.t-card{animation:cin .35s ease both}
+.map-card{animation:cin .35s .07s ease both}
+.rider-card{animation:cin .35s .14s ease both}
+.os-card{animation:cin .35s .07s ease both}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .track-layout{grid-template-columns:1fr}
+  .os-card{position:relative;top:0}
+}
+@media(max-width:480px){
+  .th-in{flex-direction:column;align-items:flex-start}
+  .th-eta{align-self:stretch;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="shop.html" class="logo">Ver<span>dora</span></a>
+  <div class="nav-r">
+    <button class="nav-back" onclick="window.location.href='shop.html'">🛒 Shop More</button>
+    <button class="help-btn">💬 Help</button>
+  </div>
+</nav>
+
+<!-- STEPPER -->
+<div class="stepper">
+  <div class="steps">
+    <div class="step done">
+      <div class="sicon">✓</div>
+      <div class="slabel">Cart</div>
+    </div>
+    <div class="step done">
+      <div class="sicon">✓</div>
+      <div class="slabel">Payment</div>
+    </div>
+    <div class="step active">
+      <div class="sicon">📦</div>
+      <div class="slabel">Tracking</div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="track-hero">
+  <div class="th-in">
+    <div class="th-left">
+      <div class="th-sub">Live Order Tracking</div>
+      <h1 class="th-title">Your <em>Fresh</em> Produce<br>Is On Its Way!</h1>
+      <div class="th-oid">Order ID: <strong id="oid-display">#VRD-2025-48271</strong></div>
+    </div>
+    <div class="th-eta">
+      <div class="eta-label">Estimated Arrival</div>
+      <div class="eta-time" id="eta-time">4:30</div>
+      <div class="eta-date">Today, <span id="eta-today"></span></div>
+      <div class="eta-pulse"><span class="pulse-dot"></span> Live Tracking Active</div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="track-layout">
+  <!-- LEFT COLUMN -->
+  <div>
+
+    <!-- TIMELINE -->
+    <div class="t-card">
+      <div class="t-card-head">
+        <h3>📋 Order Progress</h3>
+        <span class="live-badge"><span class="pulse-dot"></span> Live</span>
+      </div>
+      <div class="timeline" id="timeline">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-card">
+      <div class="t-card-head">
+        <h3>🗺️ Live Location</h3>
+        <span style="font-size:.75rem;color:var(--tl);font-weight:500">Updates every 30s</span>
+      </div>
+      <div class="map-area" id="map-area">
+        <!-- SVG roads + markers -->
+        <svg class="route-path" viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%">
+          <!-- Subtle grid roads -->
+          <line x1="0" y1="90" x2="640" y2="90" stroke="rgba(255,255,255,.5)" stroke-width="2.5"/>
+          <line x1="0" y1="190" x2="640" y2="190" stroke="rgba(255,255,255,.5)" stroke-width="2.5"/>
+          <line x1="120" y1="0" x2="120" y2="280" stroke="rgba(255,255,255,.5)" stroke-width="2.5"/>
+          <line x1="320" y1="0" x2="320" y2="280" stroke="rgba(255,255,255,.5)" stroke-width="2.5"/>
+          <line x1="520" y1="0" x2="520" y2="280" stroke="rgba(255,255,255,.5)" stroke-width="2.5"/>
+          <!-- Secondary roads -->
+          <line x1="0" y1="140" x2="640" y2="140" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+          <line x1="220" y1="0" x2="220" y2="280" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+          <line x1="420" y1="0" x2="420" y2="280" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+          <!-- Green patches (farms/parks) -->
+          <rect x="130" y="50" width="80" height="30" rx="4" fill="rgba(102,187,106,.2)"/>
+          <rect x="330" y="100" width="80" height="35" rx="4" fill="rgba(102,187,106,.15)"/>
+          <rect x="440" y="150" width="70" height="30" rx="4" fill="rgba(102,187,106,.2)"/>
+          <!-- Delivery route dotted line -->
+          <path d="M 90 210 Q 180 140 320 140 Q 460 140 520 110" stroke="var(--g)" stroke-width="3" stroke-dasharray="8,5" fill="none" stroke-linecap="round" opacity=".8"/>
+          <!-- Progress portion (solid) -->
+          <path d="M 90 210 Q 180 140 320 140 Q 410 140 445 128" stroke="var(--gdk)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- Farm marker -->
+          <circle cx="90" cy="210" r="14" fill="#1b5e20" stroke="white" stroke-width="2.5"/>
+          <text x="90" y="215" text-anchor="middle" font-size="12">🌾</text>
+          <!-- Destination marker -->
+          <circle cx="520" cy="110" r="14" fill="#e65100" stroke="white" stroke-width="2.5"/>
+          <text x="520" y="115" text-anchor="middle" font-size="12">🏠</text>
+          <!-- Rider marker (animated) -->
+          <g id="rider-dot" style="animation:riderMove 6s ease-in-out infinite alternate">
+            <circle cx="445" cy="128" r="14" fill="#43a047" stroke="white" stroke-width="2.5"/>
+            <text x="445" y="133" text-anchor="middle" font-size="11">🛵</text>
+          </g>
+          <!-- Map labels -->
+          <text x="90" y="235" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="600">Farm Pickup</text>
+          <text x="520" y="135" text-anchor="middle" font-size="10" fill="#bf360c" font-weight="600">Your Home</text>
+          <text x="445" y="153" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="600">Rider</text>
+        </svg>
+        <div class="map-progress">
+          <span class="mp-label">🛵 2.3 km away</span>
+          <div class="mp-bar"><div class="mp-fill" id="mp-fill"></div></div>
+          <span class="mp-pct" id="mp-pct">55%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIDER INFO -->
+    <div class="rider-card">
+      <div class="rider-av">👨‍🌾</div>
+      <div class="rider-info">
+        <div class="rider-name">Rajan Muthuswamy</div>
+        <div class="rider-role">Delivery Partner · Coimbatore</div>
+        <div class="rider-rating">⭐ 4.9 <span style="color:var(--tl);font-weight:400">(382 deliveries)</span></div>
+      </div>
+      <div class="rider-actions">
+        <button class="ra-btn" title="Call">📞</button>
+        <button class="ra-btn" title="Message">💬</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div>
+    <!-- ORDER ITEMS -->
+    <div class="os-card">
+      <div class="os-head"><h3>🧺 Your Order</h3></div>
+      <div class="os-items" id="os-items"></div>
+      <div class="di-card" style="border-radius:0;border:none;border-top:1px solid var(--gp);box-shadow:none">
+        <div class="di-row">
+          <div class="di-icon">📍</div>
+          <div class="di-info"><div class="di-label">Delivering to</div><div class="di-val">12A, Green Meadows Apts,<br>Gandhipuram, Coimbatore - 641001</div></div>
+        </div>
+        <div class="di-row">
+          <div class="di-icon">💳</div>
+          <div class="di-info"><div class="di-label">Payment</div><div class="di-val">Paid Online · <span style="color:var(--g);font-weight:700">₹<span id="total-paid">0</span></span></div></div>
+        </div>
+        <div class="di-row">
+          <div class="di-icon">🕐</div>
+          <div class="di-info"><div class="di-label">Placed At</div><div class="di-val" id="placed-time">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HELP -->
+    <div class="help-card" style="margin-top:20px">
+      <h4>🙋 Need Help?</h4>
+      <div class="help-btns">
+        <button class="hbtn">📞 Call Support</button>
+        <button class="hbtn">💬 Live Chat</button>
+        <button class="hbtn">📦 Report Issue</button>
+        <button class="hbtn">🔄 Cancel Order</button>
+      </div>
+    </div>
+
+    <!-- FRESH ALERT -->
+    <div class="fresh-alert">
+      <div class="fa-icon">🌡️</div>
+      <div class="fa-text">
+        <strong>Freshness Guaranteed</strong>
+        <p>Your produce is stored at optimal temperature and packed with care. Expected freshness: 3–5 days after delivery.</p>
+      </div>
+    </div>
+
+    <!-- RATE -->
+    <div class="rate-card">
+      <h4>⭐ Rate Your Experience</h4>
+      <div class="stars" id="stars">
+        <span class="star" data-v="1">⭐</span>
+        <span class="star" data-v="2">⭐</span>
+        <span class="star" data-v="3">⭐</span>
+        <span class="star" data-v="4">⭐</span>
+        <span class="star" data-v="5">⭐</span>
+      </div>
+      <button class="rate-btn" onclick="showToast('✓ Thank you for your feedback!')">Submit Rating</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<style>
+@keyframes riderMove{from{transform:translateX(0)}to{transform:translateX(14px)}}
+</style>
+
+<script>
+// Load data
+let cart=[];
+let orderId='#VRD-2025-48271';
+try{
+  cart=JSON.parse(sessionStorage.getItem('verdoraCart'))||[];
+  orderId=sessionStorage.getItem('verdoraOrderId')||orderId;
+}catch(e){}
+if(!cart.length){
+  cart=[
+    {id:18,name:"Maapillai Samba",cat:"rice",price:90,unit:"kg",e:"🍚",qty:2},
+    {id:7,name:"Carrot",cat:"vegetables",price:40,unit:"kg",e:"🥕",qty:1},
+    {id:11,name:"Apple",cat:"spices",price:120,unit:"250g",e:"🟡",qty:1},
+    {id:24,name:"Spinach",cat:"vegetables",price:15,unit:"bunch",e:"🥬",qty:3},
+  ];
+}
+
+// Display order ID
+document.getElementById('oid-display').textContent=orderId;
+
+// Order items
+const sub=cart.reduce((s,c)=>s+c.price*c.qty,0);
+const del=sub>=499?0:40;
+const tot=sub+del;
+document.getElementById('total-paid').textContent=tot;
+document.getElementById('os-items').innerHTML=cart.map(it=>`<div class="os-item">
+  <div class="osi-icon">${it.e}</div>
+  <div class="osi-info"><div class="osi-name">${it.name}</div><div class="osi-unit">per ${it.unit} · qty ${it.qty}</div></div>
+  <div class="osi-price">₹${it.price*it.qty}</div>
+</div>`).join('');
+
+// Placed time
+const now=new Date();
+document.getElementById('placed-time').textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' · '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+// ETA
+const eta=new Date(now.getTime()+90*60000);
+document.getElementById('eta-time').textContent=eta.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+document.getElementById('eta-today').textContent=eta.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+// Timeline
+const steps=[
+  {icon:'✅',name:'Order Confirmed',desc:'Your order has been placed and confirmed successfully.',time:'Just now',state:'done'},
+  {icon:'🌾',name:'Farmer Preparing',desc:'Rajan\'s Farm (Pollachi) is harvesting & packing your fresh produce.',time:'5 min ago',state:'done'},
+  {icon:'📦',name:'Packed & Dispatched',desc:'Your order has been quality-checked, packed, and handed to the rider.',time:'2 min ago',state:'done'},
+  {icon:'🛵',name:'Out for Delivery',desc:'Rajan is on the way to your location — 2.3 km away.',time:'Now',state:'active'},
+  {icon:'🏠',name:'Delivered',desc:'Awaiting delivery at your doorstep.',time:'~90 min',state:'pending'},
+];
+document.getElementById('timeline').innerHTML=steps.map(s=>`<div class="tl-step ${s.state}">
+  <div class="tl-icon-wrap">${s.state==='done'?'✓':s.icon}</div>
+  <div class="tl-content">
+    <div class="tl-name">${s.name}</div>
+    <div class="tl-desc">${s.desc}</div>
+    <div class="tl-time">${s.state==='done'?'✓ ':s.state==='active'?'⏳ ':'🕐 '}${s.time}</div>
+  </div>
+</div>`).join('');
+
+// Stars
+let selStar=0;
+document.querySelectorAll('.star').forEach(s=>{
+  s.addEventListener('click',()=>{
+    selStar=+s.dataset.v;
+    document.querySelectorAll('.star').forEach((st,i)=>{st.classList.toggle('active',i<selStar);});
+  });
+  s.addEventListener('mouseover',()=>{const v=+s.dataset.v;document.querySelectorAll('.star').forEach((st,i)=>{st.style.opacity=i<v?'1':'.4';st.style.filter=i<v?'none':'grayscale(1)';});});
+  s.addEventListener('mouseout',()=>{document.querySelectorAll('.star').forEach((st,i)=>{st.style.opacity=i<selStar?'1':'.4';st.style.filter=i<selStar?'none':'grayscale(1)';});});
+});
+
+// Simulate live progress
+let progress=55;
+setInterval(()=>{
+  if(progress<98){
+    progress+=Math.random()*1.2;
+    const p=Math.min(progress,98);
+    document.getElementById('mp-fill').style.width=p+'%';
+    document.getElementById('mp-pct').textContent=Math.round(p)+'%';
+    const km=((100-p)/100*4.2).toFixed(1);
+    document.querySelector('.mp-label').textContent=`🛵 ${km} km away`;
+  }
+},4000);
+
+// Toast
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);
+}
+
+// Help buttons toast
+document.querySelectorAll('.hbtn').forEach(b=>b.addEventListener('click',()=>showToast('✓ Connecting you with our support team…')));
+</script>
+</body>
+</html>
