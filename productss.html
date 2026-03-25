@@ -1,0 +1,751 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop Fresh Produce — AgroConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gd:#0d3314;--gdk:#1b5e20;--gm:#2e7d32;--g:#43a047;--gl:#81c784;--gp:#e8f5e9;
+  --gold:#f9a825;--ora:#e65100;--slate:#1c313a;--cream:#fdfaf4;--w:#fff;
+  --td:#1a2e1a;--tm:#4a6741;--tl:#7a9a77;
+  --fd:'Playfair Display',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --s1:0 2px 12px rgba(0,0,0,.07);--s2:0 8px 32px rgba(0,0,0,.11);--s3:0 20px 60px rgba(0,0,0,.15);
+  --r:18px;--tr:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--td);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--fb);cursor:pointer}
+input,select{font-family:var(--fb)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gl);border-radius:6px}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:68px;padding:0 4%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(253,250,244,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter: blur(18px);
+  border-bottom:1px solid rgba(102,187,106,.18);
+  box-shadow:0 2px 20px rgba(0,0,0,.07);
+}
+.logo{font-family:var(--fd);font-size:1.45rem;font-weight:900;color:var(--gdk)}
+.logo span{color:var(--g)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--tm);transition:color var(--tr)}
+.nav-links a:hover,.nav-links a.active{color:var(--gdk)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.n-out{padding:8px 20px;border:1.5px solid var(--gm);border-radius:50px;font-size:.84rem;font-weight:500;color:var(--gm);background:none;transition:all var(--tr)}
+.n-out:hover{background:var(--gm);color:#fff}
+.n-sol{padding:8px 20px;background:linear-gradient(135deg,var(--g),var(--gm));border:none;border-radius:50px;font-size:.84rem;font-weight:600;color:#fff;box-shadow:0 4px 14px rgba(46,125,50,.32);transition:all var(--tr)}
+.n-sol:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(46,125,50,.42)}
+.cw{position:relative}
+.ci{width:40px;height:40px;border-radius:50%;background:var(--gp);border:1.5px solid rgba(102,187,106,.3);display:flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;transition:all var(--tr)}
+.ci:hover{border-color:var(--g);transform:scale(1.07)}
+.cbadge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--ora);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:all var(--tr);border:2px solid var(--cream)}
+.cbadge.on{opacity:1;transform:scale(1)}
+
+/* BANNER */
+.banner{margin-top:68px;background:linear-gradient(135deg,#f0faf0 0%,#e8f5e9 55%,#c8e6c9 100%);padding:44px 4% 36px;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;width:420px;height:420px;background:radial-gradient(circle,rgba(102,187,106,.18),transparent 65%);right:-80px;top:-120px;border-radius:50%}
+.banner::after{content:'';position:absolute;width:260px;height:260px;background:radial-gradient(circle,rgba(249,168,37,.12),transparent 70%);left:60px;bottom:-80px;border-radius:50%}
+.ban-in{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.bc{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--tl);margin-bottom:12px}
+.bc a{color:var(--gm);font-weight:600}
+.pt{font-family:var(--fd);font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:900;color:var(--gd);line-height:1.15}
+.pt em{font-style:italic;color:var(--g)}
+.ps{font-size:.92rem;color:var(--tm);font-weight:300;line-height:1.65;margin-top:8px;max-width:500px}
+.bstats{display:flex;gap:28px;flex-wrap:wrap}
+.bst{text-align:center}
+.bsn{font-family:var(--fd);font-size:1.5rem;font-weight:900;color:var(--gdk)}
+.bsl{font-size:.7rem;color:var(--tl);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+
+/* MARQUEE */
+.mq{background:var(--gdk);padding:11px 0;overflow:hidden;white-space:nowrap}
+.mqt{display:inline-flex;animation:mq 30s linear infinite}
+.mqi{display:inline-flex;align-items:center;gap:9px;padding:0 26px;font-size:.8rem;font-weight:500;color:rgba(255,255,255,.82)}
+.mqd{width:5px;height:5px;background:var(--gold);border-radius:50%;flex-shrink:0}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* CAT PILLS */
+.cats{background:var(--w);border-bottom:1px solid rgba(102,187,106,.12);padding:13px 4%;position:sticky;top:68px;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.cpills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cpills::-webkit-scrollbar{display:none}
+.cp{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;font-size:.82rem;font-weight:600;white-space:nowrap;border:1.5px solid rgba(102,187,106,.28);background:rgba(255,255,255,.8);color:var(--tm);cursor:pointer;transition:all var(--tr);flex-shrink:0}
+.cp:hover{border-color:var(--g);color:var(--gdk);background:var(--gp)}
+.cp.active{background:var(--gm);color:#fff;border-color:var(--gm);box-shadow:0 4px 14px rgba(46,125,50,.28)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:252px 1fr;align-items:start}
+
+/* SIDEBAR */
+.sb{background:var(--w);border-right:1px solid rgba(102,187,106,.12);padding:24px 18px 40px;position:sticky;top:calc(68px + 49px);height:calc(100vh - 68px - 49px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--gp) transparent}
+.sbs{margin-bottom:24px}
+.sbt{font-size:.65rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--tl);margin-bottom:11px}
+.sw{position:relative}
+.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:.82rem;pointer-events:none;opacity:.6}
+.sinp{width:100%;padding:9px 12px 9px 34px;border-radius:11px;border:1.5px solid rgba(102,187,106,.22);background:var(--gp);font-size:.84rem;color:var(--td);outline:none;transition:border-color var(--tr)}
+.sinp:focus{border-color:var(--g)}
+.ssel{width:100%;padding:9px 12px;border-radius:11px;border:1.5px solid rgba(102,187,106,.22);background:var(--gp);font-size:.84rem;color:var(--td);outline:none;cursor:pointer;transition:border-color var(--tr)}
+.ssel:focus{border-color:var(--g)}
+.prw{padding:4px 0}
+.prl{display:flex;justify-content:space-between;font-size:.78rem;color:var(--tm);font-weight:500;margin-bottom:8px}
+.prr{width:100%;accent-color:var(--g);cursor:pointer}
+.flist{display:flex;flex-direction:column;gap:9px}
+.fck{display:flex;align-items:center;gap:8px;cursor:pointer}
+.fck input{accent-color:var(--g);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.fck span{font-size:.83rem;color:var(--tm)}
+.sbcl{list-style:none;display:flex;flex-direction:column;gap:2px}
+.sbcl a{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:10px;font-size:.84rem;font-weight:500;color:var(--tm);cursor:pointer;transition:all var(--tr)}
+.sbcl a:hover,.sbcl a.active{background:var(--gp);color:var(--gdk)}
+.sbcl a.active{font-weight:700}
+.scl{display:flex;align-items:center;gap:7px}
+.scc{font-size:.68rem;color:var(--tl);background:var(--gp);padding:2px 7px;border-radius:20px}
+.sbcl a.active .scc{background:rgba(46,125,50,.13);color:var(--gm)}
+.clrbtn{width:100%;padding:9px;border:1.5px solid rgba(230,81,0,.3);border-radius:10px;background:rgba(230,81,0,.05);color:var(--ora);font-size:.82rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.clrbtn:hover{background:rgba(230,81,0,.1);border-color:var(--ora)}
+
+/* PRODUCT AREA */
+.pa{padding:24px 24px 60px;background:var(--cream)}
+.rb{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.rc{font-size:.85rem;color:var(--tm)}
+.rc strong{color:var(--td);font-weight:700}
+.atags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.atag{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:var(--gp);border:1px solid rgba(102,187,106,.3);border-radius:50px;font-size:.75rem;font-weight:600;color:var(--gm)}
+.atag button{background:none;border:none;color:var(--gm);font-size:.75rem;cursor:pointer;padding:0;transition:color var(--tr)}
+.atag button:hover{color:#c62828}
+
+/* CAT SECTION */
+.csec{margin-bottom:50px}
+.csec-h{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--gp);position:relative}
+.csec-h::after{content:'';position:absolute;bottom:-2px;left:0;width:56px;height:2px;background:linear-gradient(90deg,var(--g),var(--gl));border-radius:2px}
+.chi{font-size:1.75rem}
+.chn{font-family:var(--fd);font-size:1.22rem;font-weight:900;color:var(--td)}
+.chc{font-size:.72rem;color:var(--tl);background:var(--gp);padding:3px 10px;border-radius:20px;font-weight:600}
+.chl{flex:1;height:1px;background:linear-gradient(90deg,var(--gp),transparent)}
+
+/* GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:15px}
+
+/* PRODUCT CARD */
+.pcard{background:var(--w);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1);border:1px solid rgba(102,187,106,.1);transition:all var(--tr);cursor:pointer;position:relative;animation:cin .35s ease both}
+@keyframes cin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.pcard:hover{transform:translateY(-5px);box-shadow:var(--s2);border-color:rgba(102,187,106,.28)}
+
+/* ENHANCED PCI AND PEM TO FILL AREA */
+.pci{height:158px;background:var(--gp);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pci::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(102,187,106,.15),transparent 70%);pointer-events:none}
+.pem{width:100%;height:100%;object-fit:cover;transition:transform .4s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 4px 8px rgba(0,0,0,.08));display:block}
+.pcard:hover .pem{transform:scale(1.1)}
+
+.pbadge{position:absolute;top:9px;left:9px;font-size:.63rem;font-weight:700;padding:3px 9px;border-radius:50px;color:#fff;letter-spacing:.3px;z-index:2}
+.bgo{background:var(--g)}
+.bgs{background:var(--ora)}
+.bgsp{background:#6a1b9a}
+.bgg{background:#5d4037}
+.bgp{background:#1565c0}
+.pwish{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);border:none;display:flex;align-items:center;justify-content:center;font-size:.88rem;cursor:pointer;opacity:0;transition:all var(--tr)}
+.pcard:hover .pwish{opacity:1}
+.pwish:hover{background:var(--w);transform:scale(1.12)}
+.pwish.lk{opacity:1;color:#e53935}
+.pcb{padding:13px 13px 12px}
+.pn{font-family:var(--fd);font-size:.93rem;font-weight:700;color:var(--td);margin-bottom:2px;line-height:1.25}
+.pu{font-size:.7rem;color:var(--tl);margin-bottom:10px}
+.pf{display:flex;align-items:center;justify-content:space-between}
+.pp{font-size:1.05rem;font-weight:700;color:var(--gdk);line-height:1}
+.pps{font-size:.68rem;font-weight:400;color:var(--tl);display:block;margin-top:1px}
+.abtn{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gm));border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);flex-shrink:0;box-shadow:0 3px 10px rgba(46,125,50,.28)}
+.abtn:hover{transform:scale(1.18);box-shadow:0 6px 16px rgba(46,125,50,.42)}
+.qc{display:flex;align-items:center;gap:5px}
+.qb{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(102,187,106,.35);background:var(--w);font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);color:var(--td);font-weight:700}
+.qb:hover{background:var(--gp);border-color:var(--g)}
+.qn{font-size:.84rem;font-weight:700;min-width:18px;text-align:center;color:var(--td)}
+
+/* NO RESULTS */
+.nores{text-align:center;padding:80px 20px;color:var(--tl)}
+.nores-i{font-size:3.5rem;margin-bottom:14px}
+
+/* CART DRAWER */
+.cov{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:450;opacity:0;pointer-events:none;transition:opacity var(--tr);backdrop-filter:blur(5px)}
+.cov.on{opacity:1;pointer-events:all}
+.cdr{position:fixed;top:0;right:0;width:390px;height:100vh;z-index:451;background:var(--w);box-shadow:-8px 0 50px rgba(0,0,0,.14);transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.cdr.on{transform:translateX(0)}
+.cdh{padding:18px 22px;border-bottom:1px solid var(--gp);display:flex;align-items:center;justify-content:space-between}
+.cdh h3{font-family:var(--fd);font-size:1.15rem;font-weight:900;color:var(--td);display:flex;align-items:center;gap:8px}
+.cdc{width:32px;height:32px;border-radius:50%;background:var(--gp);border:none;font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr)}
+.cdc:hover{background:#ffebee;color:#c62828}
+.cdb{flex:1;overflow-y:auto;padding:14px 22px;scrollbar-width:thin;scrollbar-color:var(--gp) transparent}
+.cemp{text-align:center;padding:60px 20px}
+.cemp-i{font-size:4rem;margin-bottom:16px}
+.cemp p{color:var(--tl);font-size:.88rem;line-height:1.6}
+.citem{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid rgba(102,187,106,.1)}
+.citem:last-child{border-bottom:none}
+.cii{width:46px;height:46px;border-radius:10px;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0}
+.cin{flex:1;min-width:0}
+.cin-n{font-size:.84rem;font-weight:600;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cin-p{font-size:.74rem;color:var(--tm);margin-top:2px}
+.ciq{display:flex;align-items:center;gap:6px}
+.cqb{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(102,187,106,.35);background:var(--w);font-size:.85rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);color:var(--td);font-weight:700}
+.cqb:hover{background:var(--gp);border-color:var(--g)}
+.cqn{font-size:.82rem;font-weight:700;min-width:16px;text-align:center}
+.cit{font-size:.84rem;font-weight:700;color:var(--gdk);min-width:46px;text-align:right}
+.cdel{background:none;border:none;color:var(--tl);font-size:.8rem;padding:4px;cursor:pointer;transition:color var(--tr)}
+.cdel:hover{color:#e53935}
+.cft{padding:16px 22px;border-top:1px solid var(--gp);background:var(--cream)}
+.fdb{background:var(--gp);border-radius:8px;padding:8px 12px;font-size:.74rem;color:var(--gm);text-align:center;margin-bottom:12px;font-weight:500}
+.fdp{height:4px;background:rgba(102,187,106,.2);border-radius:4px;margin-top:5px;overflow:hidden}
+.fdf{height:100%;background:linear-gradient(90deg,var(--gl),var(--g));border-radius:4px;transition:width .4s ease}
+.crow{display:flex;justify-content:space-between;align-items:center;font-size:.83rem;margin-bottom:5px}
+.crow span:first-child{color:var(--tm)}
+.crow span:last-child{font-weight:600;color:var(--td)}
+.ctot{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1.5px solid var(--gp);margin-bottom:14px}
+.ctot span:first-child{font-size:.92rem;font-weight:600;color:var(--td)}
+.ctot span:last-child{font-size:1.1rem;font-weight:700;color:var(--gdk)}
+.cobtn{width:100%;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--g),var(--gdk));color:#fff;font-size:.93rem;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 6px 20px rgba(46,125,50,.32);display:flex;align-items:center;justify-content:center;gap:8px}
+.cobtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(46,125,50,.42)}
+.cfb{display:flex;gap:8px;margin-top:8px}
+.wlb{flex:1;padding:10px;border:1.5px solid rgba(102,187,106,.3);border-radius:10px;background:transparent;color:var(--gm);font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.wlb:hover{background:var(--gp)}
+.clcb{flex:1;padding:10px;border:1.5px solid rgba(230,81,0,.25);border-radius:10px;background:transparent;color:var(--ora);font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.clcb:hover{background:rgba(230,81,0,.06)}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;opacity:0;pointer-events:none;transition:opacity var(--tr);backdrop-filter:blur(6px)}
+.mbg.on{opacity:1;pointer-events:all}
+.mod{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:501;width:min(540px,92vw);background:var(--w);border-radius:24px;padding:32px;box-shadow:var(--s3);opacity:0;pointer-events:none;transition:all .32s cubic-bezier(.34,1.56,.64,1)}
+.mod.on{opacity:1;pointer-events:all;transform:translate(-50%,-50%)}
+.mhd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:16px}
+.mico{font-size:4.5rem;background:var(--gp);border-radius:18px;width:90px;height:90px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(102,187,106,.2)}
+.minfo{flex:1}
+.mbadge{display:inline-block;font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:50px;color:#fff;margin-bottom:8px}
+.mname{font-family:var(--fd);font-size:1.5rem;font-weight:900;color:var(--td);line-height:1.2;margin-bottom:6px}
+.mprice{font-size:1.3rem;font-weight:700;color:var(--gdk)}
+.munit{font-size:.78rem;color:var(--tl)}
+.mcl{width:32px;height:32px;border-radius:50%;background:var(--gp);border:none;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--tr)}
+.mcl:hover{background:#ffebee;color:#c62828}
+.mdet{background:var(--gp);border-radius:14px;padding:16px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.md{display:flex;flex-direction:column;gap:2px}
+.mdl{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--tl);font-weight:600}
+.mdv{font-size:.84rem;font-weight:600;color:var(--td)}
+.mqw{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.mqwl{font-size:.82rem;font-weight:600;color:var(--tm);flex-shrink:0}
+.mqc{display:flex;align-items:center;gap:10px;background:var(--gp);border-radius:50px;padding:6px 14px}
+.mqb2{width:28px;height:28px;border-radius:50%;border:none;background:var(--w);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;box-shadow:var(--s1);transition:all var(--tr)}
+.mqb2:hover{transform:scale(1.08)}
+.mqn2{font-size:.9rem;font-weight:700;min-width:22px;text-align:center;color:var(--td)}
+.matc{width:100%;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--g),var(--gdk));color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 6px 20px rgba(46,125,50,.3);display:flex;align-items:center;justify-content:center;gap:8px}
+.matc:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(46,125,50,.4)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--gdk);color:#fff;padding:11px 22px;border-radius:50px;font-size:.84rem;font-weight:500;z-index:600;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:7px;white-space:nowrap;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* FOOTER */
+footer{background:#0a2410;padding:42px 4% 22px;color:rgba(255,255,255,.45)}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px}
+.fbl{font-family:var(--fd);font-size:1.3rem;font-weight:900;color:var(--gl)}
+.fbl span{color:var(--g)}
+.fbr p{font-size:.82rem;line-height:1.7;max-width:220px;margin-top:10px}
+.fsoc{display:flex;gap:9px;margin-top:16px}
+.fsb{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all var(--tr);color:rgba(255,255,255,.6)}
+.fsb:hover{background:var(--gm);border-color:var(--gm);color:#fff}
+.fc h4{color:rgba(255,255,255,.8);font-size:.82rem;font-weight:700;letter-spacing:.4px;margin-bottom:14px}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.fc ul li a{font-size:.78rem;color:rgba(255,255,255,.4);transition:color var(--tr)}
+.fc ul li a:hover{color:var(--gl)}
+.fbot{border-top:1px solid rgba(255,255,255,.07);padding-top:18px;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;flex-wrap:wrap;gap:10px}
+.fbot a{color:var(--gl)}
+.fnv{display:flex;gap:18px;list-style:none}
+.fnv a{font-size:.75rem;color:rgba(255,255,255,.35);transition:color var(--tr)}
+.fnv a:hover{color:var(--gl)}
+
+/* REVEAL */
+.rev{opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.rev.vis{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sb{position:relative;top:0;height:auto;border-right:none;border-bottom:1px solid var(--gp);padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sbs:last-child{grid-column:1/-1}
+  .sbcl{flex-direction:row;flex-wrap:wrap;gap:6px}
+  .sbcl a{padding:6px 12px;border:1.5px solid rgba(102,187,106,.22);border-radius:50px;font-size:.78rem;justify-content:flex-start}
+  .sbcl a.active{background:var(--gp)}
+  .scc{display:none}
+  .cats{top:68px}
+}
+@media(max-width:600px){
+  .cdr{width:100vw}
+  .pgrid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .nav-links{display:none}
+  .bstats{display:none}
+  .fg{grid-template-columns:1fr;gap:22px}
+  .sb{grid-template-columns:1fr}
+}
+@media(max-width:380px){.pgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="landingpage.html" class="logo">Ver<span>dora</span></a>
+  <ul class="nav-links">
+    <li><a href="landingpage.html">Home</a></li>
+    <li><a href="#" class="active">Shop</a></li>
+    <li><a href="farmerlogin.html">Farmers</a></li>
+    <li><a href="landingpage.html">Join Us</a></li>
+  </ul>
+  <div class="nav-r">
+    <a href="signin.html" class="n-out">Sign In</a>
+    <a href="landingpage.html" class="n-out">Register</a>
+    <div class="cw">
+      <div class="ci" id="cartBtn">🛒</div>
+      <span class="cbadge" id="cbadge">0</span>
+    </div>
+  </div>
+</nav>
+
+<section class="banner">
+  <div class="ban-in">
+    <div>
+      <div class="bc"><a href="landingpage.html">Home</a><span>›</span><span>Shop All Products</span></div>
+      <h1 class="pt">Today's <em>Fresh</em> Harvest</h1>
+      <p class="ps">Directly from 12,000+ verified farmers across India. Organic, seasonal &amp; harvested within 24 hours.</p>
+    </div>
+    <div class="bstats">
+      <div class="bst"><div class="bsn">95+</div><div class="bsl">Products</div></div>
+      <div class="bst"><div class="bsn">6</div><div class="bsl">Categories</div></div>
+      <div class="bst"><div class="bsn">24h</div><div class="bsl">Delivery</div></div>
+      <div class="bst"><div class="bsn">100%</div><div class="bsl">Organic</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="mq">
+  <div class="mqt">
+    <span class="mqi"><span class="mqd"></span>Free Delivery on Orders ₹499+</span>
+    <span class="mqi"><span class="mqd"></span>100% Farm Direct · No Middlemen</span>
+    <span class="mqi"><span class="mqd"></span>Harvested Within 24 Hours</span>
+    <span class="mqi"><span class="mqd"></span>Certified Organic Produce</span>
+    <span class="mqi"><span class="mqd"></span>12,000+ Verified Farmers Across India</span>
+    <span class="mqi"><span class="mqd"></span>Freshness Guaranteed or Full Refund</span>
+    <span class="mqi"><span class="mqd"></span>Traditional &amp; Heritage Varieties</span>
+    <span class="mqi"><span class="mqd"></span>Free Delivery on Orders ₹499+</span>
+    <span class="mqi"><span class="mqd"></span>100% Farm Direct · No Middlemen</span>
+    <span class="mqi"><span class="mqd"></span>Harvested Within 24 Hours</span>
+    <span class="mqi"><span class="mqd"></span>Certified Organic Produce</span>
+    <span class="mqi"><span class="mqd"></span>12,000+ Verified Farmers Across India</span>
+    <span class="mqi"><span class="mqd"></span>Freshness Guaranteed or Full Refund</span>
+    <span class="mqi"><span class="mqd"></span>Traditional &amp; Heritage Varieties</span>
+  </div>
+</div>
+
+<div class="cats">
+  <div class="cpills" id="cpills">
+    <button class="cp active" data-cat="all">All</button>
+    <button class="cp" data-cat="millets">Millets</button>
+    <button class="cp" data-cat="pulses">Pulses</button>
+    <button class="cp" data-cat="rice">Rice</button>
+    <button class="cp" data-cat="spices">Spices &amp; Herbs</button>
+    <button class="cp" data-cat="fruits">Fruits</button>
+    <button class="cp" data-cat="vegetables">Vegetables</button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sb">
+    <div class="sbs">
+      <div class="sbt">Search</div>
+      <div class="sw"><span class="si">🔍</span><input class="sinp" id="sinp" type="text" placeholder="Search products…"></div>
+    </div>
+    <div class="sbs">
+      <div class="sbt">Categories</div>
+      <ul class="sbcl" id="sbcl">
+        <li><a href="#" data-cat="all" class="active"><span class="scl"><span>🌿</span>All Products</span><span class="scc">95</span></a></li>
+        <li><a href="#" data-cat="millets"><span class="scl"><span>🌾</span>Millets</span><span class="scc">8</span></a></li>
+        <li><a href="#" data-cat="pulses"><span class="scl"><span>🫘</span>Pulses</span><span class="scc">13</span></a></li>
+        <li><a href="#" data-cat="rice"><span class="scl"><span>🍚</span>Rice</span><span class="scc">12</span></a></li>
+        <li><a href="#" data-cat="spices"><span class="scl"><span>🌶️</span>Spices &amp; Herbs</span><span class="scc">21</span></a></li>
+        <li><a href="#" data-cat="fruits"><span class="scl"><span>🍎</span>Fruits</span><span class="scc">16</span></a></li>
+        <li><a href="#" data-cat="vegetables"><span class="scl"><span>🥦</span>Vegetables</span><span class="scc">25</span></a></li>
+      </ul>
+    </div>
+    <div class="sbs">
+      <div class="sbt">Sort By</div>
+      <select class="ssel" id="ssel">
+        <option value="default">Default Order</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-asc">Name: A to Z</option>
+        <option value="name-desc">Name: Z to A</option>
+      </select>
+    </div>
+    <div class="sbs">
+      <div class="sbt">Max Price</div>
+      <div class="prw">
+        <div class="prl"><span>₹0</span><span id="prlbl">₹2,500</span></div>
+        <input type="range" class="prr" id="prr" min="10" max="2500" value="2500">
+      </div>
+    </div>
+    <div class="sbs">
+      <div class="sbt">Filters</div>
+      <div class="flist">
+        <label class="fck"><input type="checkbox" id="forg"><span>Organic Certified</span></label>
+        <label class="fck"><input type="checkbox" id="fsea"><span>Seasonal Only</span></label>
+        <label class="fck"><input type="checkbox" id="fher"><span>Heritage / Native</span></label>
+      </div>
+    </div>
+    <div class="sbs">
+      <button class="clrbtn" id="clrbtn">✕ Clear All Filters</button>
+    </div>
+  </aside>
+
+  <main class="pa">
+    <div class="rb">
+      <div class="rc">Showing <strong id="rcnt">95</strong> products</div>
+    </div>
+    <div id="atags" class="atags"></div>
+    <div id="pcont"></div>
+    <div class="nores" id="nores" style="display:none">
+      <div class="nores-i">🌿</div>
+      <p style="font-size:.95rem;color:var(--tl);margin-bottom:6px">No products match your filters.</p>
+      <small style="font-size:.8rem;color:var(--tl);opacity:.7">Try adjusting your search or filters.</small>
+    </div>
+  </main>
+</div>
+
+<div class="cov" id="cov"></div>
+<div class="cdr" id="cdr">
+  <div class="cdh">
+    <h3>🛒 Your Cart</h3>
+    <button class="cdc" id="cdc">✕</button>
+  </div>
+  <div class="cdb" id="cdb">
+    <div class="cemp" id="cemp">
+      <div class="cemp-i">🌾</div>
+      <p>Your cart is empty.<br>Add some fresh farm produce!</p>
+    </div>
+    <div id="citems"></div>
+  </div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="fdb" id="fdb">Add ₹<span id="fdamt">499</span> more for FREE delivery 🚚<div class="fdp"><div class="fdf" id="fdf" style="width:0%"></div></div></div>
+    <div class="crow"><span>Subtotal</span><span id="csub">₹0</span></div>
+    <div class="crow"><span>Delivery</span><span id="cdel">₹40</span></div>
+    <div class="crow"><span>Discount</span><span style="color:var(--g)">-₹0</span></div>
+    <div class="ctot"><span>Total Payable</span><span id="ctot">₹0</span></div>
+    <button class="cobtn">Proceed to Checkout →</button>
+    <div class="cfb">
+      <button class="wlb">Save for Later</button>
+      <button class="clcb" id="clcb">Clear Cart</button>
+    </div>
+  </div>
+</div>
+
+<div class="mbg" id="mbg"></div>
+<div class="mod" id="mod">
+  <div class="mhd">
+    <div class="mico" id="mico">🌾</div>
+    <div class="minfo">
+      <span class="mbadge" id="mbadge">Organic</span>
+      <div class="mname" id="mname">Product</div>
+      <div class="mprice" id="mprice">₹0 <span class="munit" id="munit">/ kg</span></div>
+    </div>
+    <button class="mcl" id="mcl">✕</button>
+  </div>
+  <div class="mdet">
+    <div class="md"><span class="mdl">Category</span><span class="mdv" id="mcat">—</span></div>
+    <div class="md"><span class="mdl">Source</span><span class="mdv">Farm Direct 🌾</span></div>
+    <div class="md"><span class="mdl">Delivery</span><span class="mdv">Same Day 🚚</span></div>
+    <div class="md"><span class="mdl">Certified</span><span class="mdv">Organic ✅</span></div>
+  </div>
+  <div class="mqw">
+    <span class="mqwl">Quantity:</span>
+    <div class="mqc">
+      <button class="mqb2" id="mqminus">−</button>
+      <span class="mqn2" id="mqnum">1</span>
+      <button class="mqb2" id="mqplus">+</button>
+    </div>
+  </div>
+  <button class="matc" id="matc">🛒 Add to Cart</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="fg">
+    <div class="fbr">
+      <div class="fbl">Ver<span>Dora</span></div>
+      <p>Bridging the gap between local farmers and consumers across India. Fresh, fair, and 100% direct from the farm.</p>
+      <div class="fsoc">
+        <div class="fsb">𝕏</div><div class="fsb">f</div><div class="fsb">in</div><div class="fsb">📸</div>
+      </div>
+    </div>
+    <div class="fc">
+      <h4>For Buyers</h4>
+      <ul><li><a href="#">Browse Products</a></li><li><a href="#">How to Order</a></li><li><a href="#">Delivery Info</a></li><li><a href="#">Returns Policy</a></li><li><a href="#">Track Order</a></li></ul>
+    </div>
+    <div class="fc">
+      <h4>For Farmers</h4>
+      <ul><li><a href="farmregister.html">Register as Farmer</a></li><li><a href="#">List Products</a></li><li><a href="#">Farmer Support</a></li><li><a href="#">Payment Info</a></li><li><a href="#">Success Stories</a></li></ul>
+    </div>
+    <div class="fc">
+      <h4>Company</h4>
+      <ul><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li><li><a href="#">Press Kit</a></li></ul>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>© 2025 Verdora. All rights reserved. Proudly Made in India.</span>
+    <ul class="fnv">
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Terms</a></li>
+      <li><a href="#">Cookies</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+const products = [
+  {id:1,n:"Organic Foxtail Millet",cat:"millets",p:120,u:"kg",img:"foxtail.jpg",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:2,n:"Premium Toor Dal",cat:"pulses",p:185,u:"kg",img:"toordal.jpg",badge:"Heritage",bcl:"bgg",org:true,sea:false,her:true},
+  {id:3,n:"Alphonso Mangoes",cat:"fruits",p:850,u:"doz",img:"alphonso mango.jpg",badge:"Seasonal",bcl:"bgs",org:false,sea:true,her:false},
+  {id:4,n:"Finger Millets",cat:"millets",p:140,u:"kg",img:"fingermillet.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:5,n:"Pearl Millet",cat:"millets",p:195,u:"kg",img:"pearlmillet.jpg",badge:"Organic",bcl:"bgp",org:false,sea:false,her:true},
+  {id:6,n:"Little Millet",cat:"millets",p:250,u:"kg",img:"littlemillet.webp",badge:"Organic",bcl:"bgsp",org:false,sea:false,her:false},
+  {id:7,n:"Fresh Carrots",cat:"vegetables",p:60,u:"kg",img:"carrot.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:8,n:"Karuppu Kavuni",cat:"rice",p:185,u:"kg",img:"karuppukavuni.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:9,n:"Pomegranate",cat:"fruits",p:90,u:"kg",img:"pomegranate.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:10,n:"Chikoo",cat:"fruits",p:80,u:"kg",img:"chikoo.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:11,n:"Apple",cat:"fruits",p:95,u:"kg",img:"apple.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:12,n:"Guava",cat:"fruits",p:60,u:"kg",img:"guava.jpg",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:13,n:"Cardamon",cat:"spices",p:190,u:"100g",img:"cardamon.jpg",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:14,n:"Star Anise",cat:"spices",p:170,u:"250g",img:"staranise.jpg",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:15,n:"Soy Beans",cat:"pulses",p:210,u:"kg",img:"soybeans.webp",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:16,n:"Split Chickpeas",cat:"pulses",p:180,u:"kg",img:"splitchickpeas.webp",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:17,n:"Seeraga Samba",cat:"rice",p:290,u:"kg",img:"seeragasamba.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:18,n:"Maapillai Samba",cat:"rice",p:230,u:"kg",img:"maapillaisamba.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false},
+  {id:19,n:"Onion",cat:"vegetables",p:50,u:"kg",img:"onion.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:20,n:"Tomatoes",cat:"vegetables",p:40,u:"kg",img:"tomatoes.png",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:21,n:"Ginger",cat:"vegetables",p:20,u:"kg",img:"ginger.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:22,n:"Garlic",cat:"vegetables",p:30,u:"kg",img:"garlic.jpg",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:23,n:"Green Chillies",cat:"vegetables",p:20,u:"kg",img:"chillies.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:24,n:"Drumstick",cat:"vegetables",p:70,u:"kg",img:"drumstick.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:25,n:"Beetroot",cat:"vegetables",p:50,u:"kg",img:"beetroot.webp",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:26,n:"Orange",cat:"fruits",p:195,u:"kg",img:"orange.jpg",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:27,n:"Whole Pepper",cat:"spices",p:120,u:"250g",img:"pepper.webp",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:28,n:"Fennel Seeds",cat:"spices",p:110,u:"100g",img:"fennelseeds.webp",badge:"Heritage",bcl:"bgo",org:true,sea:false,her:false},
+  {id:29,n:"Cumin Seeds",cat:"spices",p:130,u:"250g",img:"cuminseeds.jpg",badge:"Fresh",bcl:"bgo",org:true,sea:false,her:false},
+  {id:30,n:"Thooyamalli",cat:"rice",p:150,u:"kg",img:"thooyamalli.webp",badge:"Organic",bcl:"bgo",org:true,sea:false,her:false}
+];
+
+let cart = [];
+let st = {cat:"all", q:"", sort:"default", maxP:2500, forg:false, fsea:false, fher:false};
+
+function render(){
+  const pcont = document.getElementById("pcont");
+  let filtered = products.filter(p => {
+    return (st.cat==="all" || p.cat===st.cat) &&
+           (p.n.toLowerCase().includes(st.q.toLowerCase())) &&
+           (p.p <= st.maxP) &&
+           (!st.forg || p.org) &&
+           (!st.fsea || p.sea) &&
+           (!st.fher || p.her);
+  });
+
+  if(st.sort==="price-asc") filtered.sort((a,b)=>a.p-b.p);
+  else if(st.sort==="price-desc") filtered.sort((a,b)=>b.p-a.p);
+  else if(st.sort==="name-asc") filtered.sort((a,b)=>a.n.localeCompare(b.n));
+  else if(st.sort==="name-desc") filtered.sort((a,b)=>b.n.localeCompare(a.n));
+
+  document.getElementById("rcnt").textContent = filtered.length;
+  document.getElementById("nores").style.display = filtered.length ? "none" : "block";
+
+  pcont.innerHTML = `
+    <div class="pgrid">
+      ${filtered.map(p => `
+        <div class="pcard rev" onclick="quickView(${p.id})">
+          <div class="pci">
+            <span class="pbadge ${p.bcl}">${p.badge}</span>
+            <img src="${p.img}" class="pem" alt="${p.n}">
+            <button class="pwish" onclick="event.stopPropagation();this.classList.toggle('lk')">♥</button>
+          </div>
+          <div class="pcb">
+            <div class="pn">${p.n}</div>
+            <div class="pu">1 ${p.u}</div>
+            <div class="pf">
+              <div class="pp">₹${p.p}<span class="pps">per ${p.u}</span></div>
+              <button class="abtn" onclick="event.stopPropagation();addToCart(${p.id})">+</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function addToCart(id, qty=1){
+  const p = products.find(x=>x.id===id);
+  const existing = cart.find(x=>x.id===id);
+  if(existing) existing.q += qty;
+  else cart.push({...p, q:qty});
+  updateCart();
+  showToast(`${p.n} added to cart!`);
+}
+
+function updateCart(){
+  const itemsEl = document.getElementById("citems");
+  const badge = document.getElementById("cbadge");
+  const footer = document.getElementById("cft");
+  const empty = document.getElementById("cemp");
+  
+  const count = cart.reduce((s,i)=>s+i.q,0);
+  badge.textContent = count;
+  badge.classList.toggle("on", count > 0);
+
+  if(!cart.length){
+    empty.style.display="block";
+    itemsEl.innerHTML="";
+    footer.style.display="none";
+    return;
+  }
+
+  empty.style.display="none";
+  footer.style.display="block";
+  itemsEl.innerHTML = cart.map(i => `
+    <div class="citem">
+      <img src="${i.img}" class="cii" style="object-fit:cover" alt="">
+      <div class="cin">
+        <div class="cin-n">${i.n}</div>
+        <div class="cin-p">₹${i.p} / ${i.u}</div>
+      </div>
+      <div class="ciq">
+        <button class="cqb" onclick="changeQty(${i.id},-1)">-</button>
+        <span class="cqn">${i.q}</span>
+        <button class="cqb" onclick="changeQty(${i.id},1)">+</button>
+      </div>
+      <div class="cit">₹${i.p*i.q}</div>
+      <button class="cdel" onclick="changeQty(${i.id},-${i.q})">✕</button>
+    </div>
+  `).join('');
+
+  const sub = cart.reduce((s,i)=>s+(i.p*i.q),0);
+  const del = sub >= 499 ? 0 : 40;
+  document.getElementById("csub").textContent = `₹${sub.toLocaleString("en-IN")}`;
+  document.getElementById("cdel").textContent = del === 0 ? "FREE" : `₹${del}`;
+  document.getElementById("ctot").textContent = `₹${(sub+del).toLocaleString("en-IN")}`;
+  
+  const diff = 499 - sub;
+  const progress = Math.min((sub/499)*100, 100);
+  document.getElementById("fdb").innerHTML = diff > 0 
+    ? `Add ₹${diff} more for FREE delivery 🚚<div class="fdp"><div class="fdf" style="width:${progress}%"></div></div>`
+    : `You've unlocked FREE delivery! 🚚<div class="fdp"><div class="fdf" style="width:100%"></div></div>`;
+}
+
+function changeQty(id, d){
+  const i = cart.find(x=>x.id===id);
+  if(!i) return;
+  i.q += d;
+  if(i.q <= 0) cart = cart.filter(x=>x.id!==id);
+  updateCart();
+}
+
+function quickView(id){
+  const p = products.find(x=>x.id===id);
+  document.getElementById("mico").innerHTML = `<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">`;
+  document.getElementById("mbadge").textContent = p.badge;
+  document.getElementById("mbadge").className = `mbadge ${p.bcl}`;
+  document.getElementById("mname").textContent = p.n;
+  document.getElementById("mprice").textContent = `₹${p.p}`;
+  document.getElementById("munit").textContent = `/ ${p.u}`;
+  document.getElementById("mcat").textContent = p.cat.charAt(0).toUpperCase() + p.cat.slice(1);
+  document.getElementById("mqnum").textContent = "1";
+  document.getElementById("matc").onclick = () => {
+    addToCart(p.id, parseInt(document.getElementById("mqnum").textContent));
+    closeModal();
+  };
+  document.getElementById("mbg").classList.add("on");
+  document.getElementById("mod").classList.add("on");
+}
+
+function showToast(m){
+  const t = document.getElementById("toast");
+  t.textContent = m;
+  t.classList.add("on");
+  setTimeout(()=>t.classList.remove("on"), 2500);
+}
+
+function closeModal(){
+  document.getElementById("mbg").classList.remove("on");
+  document.getElementById("mod").classList.remove("on");
+}
+
+function syncUI(){
+  document.querySelectorAll(".cp, .sbcl a").forEach(el => {
+    el.classList.toggle("active", el.dataset.cat === st.cat);
+  });
+  render();
+}
+
+document.getElementById("cartBtn").onclick = () => {
+  document.getElementById("cov").classList.add("on");
+  document.getElementById("cdr").classList.add("on");
+};
+document.getElementById("cdc").onclick = () => {
+  document.getElementById("cov").classList.remove("on");
+  document.getElementById("cdr").classList.remove("on");
+};
+document.getElementById("cov").onclick = document.getElementById("cdc").onclick;
+
+document.getElementById("mcl").onclick = closeModal;
+document.getElementById("mbg").onclick = closeModal;
+
+document.getElementById("mqplus").onclick = () => {
+  let n = document.getElementById("mqnum");
+  n.textContent = parseInt(n.textContent) + 1;
+};
+document.getElementById("mqminus").onclick = () => {
+  let n = document.getElementById("mqnum");
+  if(parseInt(n.textContent) > 1) n.textContent = parseInt(n.textContent) - 1;
+};
+
+document.getElementById("clcb").onclick = () => { cart=[]; updateCart(); };
+
+document.querySelectorAll(".cp, .sbcl a").forEach(el => {
+  el.onclick = (e) => {
+    e.preventDefault();
+    st.cat = el.dataset.cat;
+    syncUI();
+  };
+});
+
+document.getElementById("ssel").addEventListener("change", function(){ st.sort=this.value; render(); });
+document.getElementById("prr").addEventListener("input", function(){
+  st.maxP = parseInt(this.value);
+  document.getElementById("prlbl").textContent=`₹${(+this.value).toLocaleString("en-IN")}`;render();
+});
+document.getElementById("sinp").addEventListener("input", function(){st.q=this.value;render();});
+document.getElementById("forg").addEventListener("change", function(){st.forg=this.checked;render();});
+document.getElementById("fsea").addEventListener("change", function(){st.fsea=this.checked;render();});
+document.getElementById("fher").addEventListener("change", function(){st.fher=this.checked;render();});
+document.getElementById("clrbtn").addEventListener("click",()=>{
+  st={cat:"all",q:"",sort:"default",maxP:2500,forg:false,fsea:false,fher:false};
+  document.getElementById("sinp").value="";document.getElementById("ssel").value="default";
+  document.getElementById("prr").value=2500;document.getElementById("prlbl").textContent="₹2,500";
+  document.getElementById("forg").checked=false;document.getElementById("fsea").checked=false;document.getElementById("fher").checked=false;
+  syncUI();
+});
+
+const revObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("vis");revObs.unobserve(e.target);}});},{threshold:.06});
+function doReveal(){document.querySelectorAll(".rev:not(.vis)").forEach(el=>revObs.observe(el));}
+new MutationObserver(doReveal).observe(document.getElementById("pcont"),{childList:true,subtree:true});
+
+render();
+updateCart();
+</script>
+</body>
+</html>

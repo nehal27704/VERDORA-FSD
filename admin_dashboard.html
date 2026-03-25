@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Verdora — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+:root{
+  /* ── Verdora palette (matches landing page) ── */
+  --green-darkest:#0d3314;
+  --green-dark:   #1b5e20;
+  --green-mid:    #2e7d32;
+  --green:        #43a047;
+  --green-light:  #81c784;
+  --green-pale:   #e8f5e9;
+  --green-faint:  #f0faf0;
+  --gold:         #f9a825;
+  --gold-pale:    #fff8e1;
+  --orange:       #e65100;
+  --orange-pale:  #fff3e0;
+  --blue:         #1565c0;
+  --blue-pale:    #e3f2fd;
+  --red:          #c62828;
+  --red-pale:     #ffebee;
+  --teal:         #00695c;
+  --teal-pale:    #e0f2f1;
+  --purple:       #6a1b9a;
+  --purple-pale:  #f3e5f5;
+  --cream:        #fdfaf4;
+  --sidebar-bg:   #0a2410;
+  --text-dark:    #1a2e1a;
+  --text-mid:     #4a6741;
+  --text-light:   #7a9a77;
+  --white:        #ffffff;
+  --border:       rgba(102,187,106,0.15);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+  --shadow-sm:    0 2px 10px rgba(0,0,0,.06);
+  --shadow-md:    0 6px 24px rgba(0,0,0,.09);
+  --radius:       14px;
+  --transition:   .25s cubic-bezier(.4,0,.2,1);
+  --sidebar-w:    240px;
+}
+
+html,body{height:100%;}
+body{font-family:var(--font-body);background:var(--cream);color:var(--text-dark);display:flex;overflow:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(102,187,106,.22);border-radius:2px;}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--sidebar-bg);
+  display:flex;flex-direction:column;
+  height:100vh;position:fixed;left:0;top:0;z-index:50;
+  overflow-y:auto;overflow-x:hidden;
+  border-right:1px solid rgba(129,199,132,.08);
+}
+
+/* Logo */
+.sb-logo{
+  padding:20px 16px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sb-logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--green),var(--green-mid));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(67,160,71,.4);
+}
+.sb-logo-txt{font-family:var(--font-display);font-size:1.15rem;font-weight:900;color:#fff;}
+.sb-logo-txt span{color:var(--green-light);}
+
+/* Sections */
+.sb-sec{padding:12px 10px 4px;}
+.sb-lbl{font-size:.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:0 8px;margin-bottom:4px;}
+
+/* Nav items */
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border-radius:10px;
+  font-size:.83rem;font-weight:500;
+  color:rgba(255,255,255,.48);
+  cursor:pointer;transition:all var(--transition);
+  margin-bottom:1px;border:none;background:none;
+  width:100%;text-align:left;
+}
+.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.82);}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(67,160,71,.3),rgba(67,160,71,.08));
+  color:var(--green-light);
+  border-left:3px solid var(--green);
+  padding-left:7px;
+}
+.nav-icon{font-size:.9rem;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;font-size:.62rem;font-weight:700;
+  padding:2px 7px;border-radius:50px;min-width:18px;text-align:center;
+}
+.nb-g{background:var(--green);color:#fff;}
+.nb-gold{background:var(--gold);color:var(--green-darkest);}
+.nb-r{background:#e53935;color:#fff;}
+
+/* Admin footer */
+.sb-footer{margin-top:auto;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06);}
+.admin-row{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px;cursor:pointer;transition:background var(--transition);}
+.admin-row:hover{background:rgba(255,255,255,.07);}
+.admin-av{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;
+}
+.admin-name{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.78);}
+.admin-role{font-size:.68rem;color:rgba(255,255,255,.32);}
+.sb-logout{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.26);font-size:.88rem;cursor:pointer;transition:color var(--transition);}
+.sb-logout:hover{color:#ef9a9a;}
+
+/* ═══════════════════════════════════════════════
+   MAIN AREA
+═══════════════════════════════════════════════ */
+.main{margin-left:var(--sidebar-w);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(253,250,244,.94);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:62px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.page-title{font-family:var(--font-display);font-size:1.15rem;font-weight:900;color:var(--text-dark);}
+.breadcrumb{font-size:.72rem;color:var(--text-light);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.search-box{
+  display:flex;align-items:center;gap:7px;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:10px;padding:6px 12px;width:200px;
+  transition:border-color var(--transition);
+}
+.search-box:focus-within{border-color:var(--green);}
+.search-box input{border:none;background:none;outline:none;font-family:var(--font-body);font-size:.83rem;color:var(--text-dark);width:100%;}
+.search-box input::placeholder{color:var(--text-light);}
+.tb-btn{
+  width:36px;height:36px;border-radius:9px;
+  border:1.5px solid var(--border);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;cursor:pointer;transition:all var(--transition);position:relative;
+}
+.tb-btn:hover{border-color:var(--green);background:var(--green-pale);}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:1.5px solid var(--cream);}
+.date-chip{
+  background:var(--green-pale);
+  border:1px solid rgba(102,187,106,.3);
+  border-radius:8px;padding:5px 12px;
+  font-size:.75rem;font-weight:500;color:var(--green-mid);
+}
+
+/* ── MARQUEE STRIP ── */
+.marquee-strip{background:var(--green-mid);padding:9px 0;overflow:hidden;white-space:nowrap;flex-shrink:0;}
+.marquee-track{display:inline-flex;animation:marquee 28s linear infinite;}
+.marquee-item{display:inline-flex;align-items:center;gap:8px;padding:0 26px;font-size:.78rem;font-weight:500;color:rgba(255,255,255,.85);}
+.marquee-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;flex-shrink:0;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── CONTENT ── */
+.content{padding:20px 24px;flex:1;}
+.view{display:none;}.view.active{display:block;}
+
+/* ═══════════════════════════════════════════════
+   KPI CARDS
+═══════════════════════════════════════════════ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.kpi-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:18px 20px;border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);transition:all var(--transition);cursor:default;
+  position:relative;overflow:hidden;
+}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--green-light),var(--green));
+  opacity:0;transition:opacity var(--transition);
+}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.kpi-card:hover::before{opacity:1;}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.kpi-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.ico-g{background:var(--green-pale);}
+.ico-gold{background:var(--gold-pale);}
+.ico-bl{background:var(--blue-pale);}
+.ico-or{background:var(--orange-pale);}
+.ico-tl{background:var(--teal-pale);}
+.ico-rd{background:var(--red-pale);}
+.ico-pu{background:var(--purple-pale);}
+.kpi-trend{display:flex;align-items:center;gap:3px;font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:50px;}
+.tr-up{background:var(--green-pale);color:var(--green-mid);}
+.tr-dn{background:var(--red-pale);color:var(--red);}
+.kpi-val{font-family:var(--font-display);font-size:1.65rem;font-weight:900;color:var(--text-dark);line-height:1;}
+.kpi-lbl{font-size:.76rem;color:var(--text-light);margin-top:3px;}
+.kpi-sub{font-size:.7rem;color:var(--text-light);padding-top:8px;border-top:1px solid var(--border);margin-top:8px;}
+.kpi-sub strong{color:var(--text-mid);}
+
+/* ═══════════════════════════════════════════════
+   CHART CARDS
+═══════════════════════════════════════════════ */
+.row2{display:grid;gap:14px;margin-bottom:18px;}
+.r2a{grid-template-columns:2fr 1fr;}
+.r2b{grid-template-columns:1fr 1fr 1fr;}
+.r2c{grid-template-columns:1.5fr 1fr;}
+.r2d{grid-template-columns:1.6fr 1fr;}
+
+.chart-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:18px 20px;border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);transition:box-shadow var(--transition);
+}
+.chart-card:hover{box-shadow:var(--shadow-md);}
+.ch-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.ch-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--text-dark);}
+.ch-sub{font-size:.72rem;color:var(--text-light);margin-top:2px;}
+.ch-filters{display:flex;gap:5px;}
+.f-btn{
+  padding:3px 10px;border-radius:50px;
+  border:1px solid var(--border);background:transparent;
+  font-family:var(--font-body);font-size:.7rem;font-weight:500;
+  color:var(--text-light);cursor:pointer;transition:all var(--transition);
+}
+.f-btn.active,.f-btn:hover{background:var(--green-pale);border-color:var(--green);color:var(--green-mid);}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:.73rem;color:var(--text-mid);}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ═══════════════════════════════════════════════
+   TABLE CARDS
+═══════════════════════════════════════════════ */
+.tbl-card{
+  background:var(--white);border-radius:var(--radius);
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+  overflow:hidden;margin-bottom:18px;
+  transition:box-shadow var(--transition);
+}
+.tbl-card:hover{box-shadow:var(--shadow-md);}
+.tbl-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:10px;
+}
+.tbl-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--text-dark);}
+.tbl-sub{font-size:.72rem;color:var(--text-light);margin-top:2px;}
+.tbl-actions{display:flex;gap:8px;align-items:center;}
+.va-btn{font-size:.78rem;font-weight:600;color:var(--green-mid);background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;transition:color var(--transition);}
+.va-btn:hover{color:var(--green-dark);}
+.add-btn{
+  padding:7px 14px;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  border:none;border-radius:8px;color:#fff;
+  font-family:var(--font-body);font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all var(--transition);
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 4px 12px rgba(46,125,50,.28);
+}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,125,50,.38);}
+
+table{width:100%;border-collapse:collapse;}
+thead th{
+  text-align:left;font-size:.69rem;font-weight:600;
+  color:var(--text-light);letter-spacing:.6px;text-transform:uppercase;
+  padding:9px 20px;background:var(--green-faint);
+  border-bottom:1px solid var(--border);
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background var(--transition);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--green-faint);}
+tbody td{padding:11px 20px;font-size:.82rem;color:var(--text-dark);vertical-align:middle;}
+
+.farmer-cell{display:flex;align-items:center;gap:9px;}
+.f-av{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--green-pale);border:1.5px solid rgba(102,187,106,.3);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;
+}
+.f-name{font-weight:600;font-size:.82rem;}
+.f-loc{font-size:.7rem;color:var(--text-light);}
+
+/* Status pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.pg{background:var(--green-pale);color:var(--green-mid);}
+.pgold{background:var(--gold-pale);color:#8a6a00;}
+.pr{background:var(--red-pale);color:var(--red);}
+.pb{background:var(--blue-pale);color:var(--blue);}
+.pu2{background:var(--purple-pale);color:var(--purple);}
+
+.stars{color:var(--gold);font-size:.82rem;letter-spacing:1px;}
+.act-icon{font-size:.88rem;cursor:pointer;transition:opacity var(--transition);padding:3px 5px;border-radius:5px;border:none;background:none;}
+.act-icon:hover{opacity:.7;background:var(--green-pale);}
+
+/* ═══════════════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════════════ */
+.filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+.filter-select{
+  padding:7px 12px;border:1.5px solid var(--border);
+  border-radius:9px;background:var(--white);
+  font-family:var(--font-body);font-size:.82rem;color:var(--text-dark);
+  outline:none;cursor:pointer;transition:border-color var(--transition);
+}
+.filter-select:focus{border-color:var(--green);}
+.filter-input{
+  padding:7px 14px;border:1.5px solid var(--border);
+  border-radius:9px;background:var(--white);
+  font-family:var(--font-body);font-size:.82rem;color:var(--text-dark);
+  outline:none;transition:border-color var(--transition);flex:1;min-width:180px;
+}
+.filter-input:focus{border-color:var(--green);}
+.filter-input::placeholder{color:var(--text-light);}
+.clear-btn{
+  padding:7px 14px;border:1.5px solid var(--border);
+  border-radius:9px;background:transparent;
+  font-family:var(--font-body);font-size:.78rem;color:var(--text-light);
+  cursor:pointer;transition:all var(--transition);
+}
+.clear-btn:hover{border-color:var(--green);color:var(--green-mid);}
+
+/* ═══════════════════════════════════════════════
+   TOP PRODUCTS BAR
+═══════════════════════════════════════════════ */
+.prod-bar{display:flex;flex-direction:column;}
+.prod-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.prod-row:last-child{border-bottom:none;}
+.prod-rank{width:22px;height:22px;border-radius:50%;background:var(--green-pale);color:var(--green-mid);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prod-info{flex:1;}
+.prod-name{font-size:.82rem;font-weight:600;color:var(--text-dark);}
+.prod-cat{font-size:.7rem;color:var(--text-light);}
+.bar-wrap{width:80px;}
+.bar-bg{height:5px;background:var(--green-pale);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--green-light),var(--green));border-radius:3px;}
+.bar-pct{font-size:.7rem;font-weight:600;color:var(--green-mid);margin-top:2px;text-align:right;}
+.prod-val{font-size:.82rem;font-weight:600;color:var(--text-dark);text-align:right;min-width:64px;}
+
+/* ═══════════════════════════════════════════════
+   GEO BARS
+═══════════════════════════════════════════════ */
+.geo-list{display:flex;flex-direction:column;gap:11px;}
+.geo-item{display:flex;align-items:center;gap:9px;}
+.geo-flag{font-size:1rem;}
+.geo-name{font-size:.82rem;font-weight:500;color:var(--text-dark);flex:1;}
+.geo-bw{width:90px;}
+.geo-bb{height:5px;background:var(--green-pale);border-radius:3px;overflow:hidden;}
+.geo-bf{height:100%;background:linear-gradient(90deg,var(--green-light),var(--green));border-radius:3px;}
+.geo-val{font-size:.76rem;font-weight:600;color:var(--text-mid);min-width:40px;text-align:right;}
+
+/* ═══════════════════════════════════════════════
+   ALERT LIST
+═══════════════════════════════════════════════ */
+.alert-list{list-style:none;}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:11px 20px;border-bottom:1px solid var(--border);transition:background var(--transition);cursor:default;}
+.alert-item:last-child{border-bottom:none;}
+.alert-item:hover{background:var(--green-faint);}
+.al-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.al-body{flex:1;}
+.al-msg{font-size:.82rem;color:var(--text-dark);font-weight:500;}
+.al-time{font-size:.7rem;color:var(--text-light);margin-top:2px;}
+.al-act{
+  font-size:.72rem;font-weight:600;color:var(--green-mid);
+  background:var(--green-pale);border:none;border-radius:6px;
+  padding:4px 9px;cursor:pointer;white-space:nowrap;
+  transition:all var(--transition);flex-shrink:0;
+}
+.al-act:hover{background:var(--green);color:#fff;}
+
+/* ═══════════════════════════════════════════════
+   MINI STATS
+═══════════════════════════════════════════════ */
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mini-stat{background:var(--green-faint);border-radius:10px;padding:12px 14px;border:1px solid var(--border);}
+.ms-val{font-family:var(--font-display);font-size:1.2rem;font-weight:900;color:var(--text-dark);}
+.ms-lbl{font-size:.7rem;color:var(--text-light);margin-top:2px;}
+
+/* ═══════════════════════════════════════════════
+   CATEGORY BADGE
+═══════════════════════════════════════════════ */
+.cat-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
+.cat-fruits     {background:#fff3e0;color:#e65100;}
+.cat-vegetables {background:#e8f5e9;color:#2e7d32;}
+.cat-spices     {background:#fce4ec;color:#c62828;}
+.cat-herbs      {background:#e8f5e9;color:#00695c;}
+.cat-rice       {background:#fff8e1;color:#8a6a00;}
+.cat-millets    {background:#f3e5f5;color:#6a1b9a;}
+
+/* ═══════════════════════════════════════════════
+   REVENUE SPLIT ROW
+═══════════════════════════════════════════════ */
+.rev-split-row{display:flex;align-items:center;justify-content:space-between;font-size:.76rem;padding:5px 0;border-bottom:1px solid var(--border);}
+.rev-split-row:last-child{border-bottom:none;}
+.rev-split-dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px;}
+
+/* ═══════════════════════════════════════════════
+   PAGINATION
+═══════════════════════════════════════════════ */
+.pagination{display:flex;align-items:center;gap:6px;padding:14px 20px;border-top:1px solid var(--border);}
+.pg-btn{padding:5px 12px;border:1.5px solid var(--border);border-radius:7px;background:transparent;font-family:var(--font-body);font-size:.78rem;color:var(--text-mid);cursor:pointer;transition:all var(--transition);}
+.pg-btn:hover{border-color:var(--green);color:var(--green-mid);}
+.pg-btn.active{background:var(--green-mid);border-color:var(--green-mid);color:#fff;}
+.pg-btn:disabled{opacity:.4;cursor:default;}
+.pg-info{font-size:.76rem;color:var(--text-light);margin-left:auto;}
+
+/* ═══════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,51,20,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+.modal{background:var(--white);border-radius:18px;padding:28px 32px;width:520px;max-width:95vw;max-height:88vh;overflow-y:auto;position:relative;animation:slideUp .25s ease;border:1px solid rgba(102,187,106,.15);}
+.modal-sm{width:400px;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:var(--font-display);font-size:1.2rem;font-weight:900;color:var(--text-dark);}
+.modal-close{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-light);padding:4px;border-radius:6px;transition:all var(--transition);}
+.modal-close:hover{background:var(--red-pale);color:var(--red);}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:.75rem;font-weight:600;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.form-ctrl{
+  width:100%;padding:10px 14px;
+  border:1.5px solid rgba(102,187,106,.22);border-radius:10px;
+  font-family:var(--font-body);font-size:.88rem;color:var(--text-dark);
+  outline:none;background:var(--white);transition:border-color var(--transition);
+}
+.form-ctrl:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(67,160,71,.1);}
+.form-ctrl::placeholder{color:#b8ccb8;}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border);}
+.btn-cancel{padding:9px 20px;border:1.5px solid var(--border);border-radius:9px;background:transparent;font-family:var(--font-body);font-size:.85rem;color:var(--text-light);cursor:pointer;transition:all var(--transition);}
+.btn-cancel:hover{border-color:var(--green);color:var(--green-mid);}
+.btn-save{padding:9px 22px;background:linear-gradient(135deg,var(--green),var(--green-mid));border:none;border-radius:9px;color:#fff;font-family:var(--font-body);font-size:.85rem;font-weight:600;cursor:pointer;transition:all var(--transition);box-shadow:0 4px 14px rgba(46,125,50,.25);}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(46,125,50,.38);}
+.btn-danger{padding:9px 22px;background:var(--red);border:none;border-radius:9px;color:#fff;font-family:var(--font-body);font-size:.85rem;font-weight:600;cursor:pointer;transition:all var(--transition);}
+.btn-danger:hover{background:#b71c1c;}
+
+/* ═══════════════════════════════════════════════
+   CONFIRM DIALOG
+═══════════════════════════════════════════════ */
+.confirm-body{text-align:center;padding:8px 0 4px;}
+.confirm-icon{font-size:2.8rem;margin-bottom:12px;}
+.confirm-title{font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:var(--text-dark);margin-bottom:8px;}
+.confirm-msg{font-size:.87rem;color:var(--text-light);line-height:1.6;}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:12px 18px;border-radius:11px;font-size:.84rem;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(0,0,0,.15);animation:toastIn .3s ease;min-width:260px;}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-success{background:var(--green-dark);color:#fff;}
+.toast-error{background:var(--red);color:#fff;}
+.toast-info{background:var(--blue);color:#fff;}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.r2a,.r2b,.r2c,.r2d{grid-template-columns:1fr;}}
+@media(max-width:768px){:root{--sidebar-w:0px;}.sidebar{display:none;}.kpi-grid{grid-template-columns:1fr 1fr;}.content{padding:14px;}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">🌾</div>
+    <div class="sb-logo-txt">Ver<span>dora</span></div>
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Main</div>
+    <button class="nav-item active" onclick="navigate('overview',this)"><span class="nav-icon">📊</span>Overview</button>
+    <button class="nav-item" onclick="navigate('orders',this)"><span class="nav-icon">📦</span>Orders<span class="nav-badge nb-g" id="nb-orders">24</span></button>
+    <button class="nav-item" onclick="navigate('products',this)"><span class="nav-icon">🛒</span>Products</button>
+    <button class="nav-item" onclick="navigate('revenue',this)"><span class="nav-icon">💰</span>Revenue</button>
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">People</div>
+    <button class="nav-item" onclick="navigate('farmers',this)"><span class="nav-icon">🌾</span>Farmers<span class="nav-badge nb-gold" id="nb-farmers">7</span></button>
+    <button class="nav-item" onclick="navigate('customers',this)"><span class="nav-icon">👤</span>Customers</button>
+    <button class="nav-item" onclick="navigate('disputes',this)"><span class="nav-icon">⚠️</span>Disputes<span class="nav-badge nb-r" id="nb-disputes">3</span></button>
+    <button class="nav-item" onclick="navigate('reviews',this)"><span class="nav-icon">⭐</span>Reviews</button>
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Platform</div>
+    <button class="nav-item" onclick="navigate('analytics',this)"><span class="nav-icon">📈</span>Analytics</button>
+    <button class="nav-item" onclick="navigate('notifications',this)"><span class="nav-icon">🔔</span>Notifications</button>
+    <button class="nav-item" onclick="navigate('settings',this)"><span class="nav-icon">⚙️</span>Settings</button>
+  </div>
+
+  <div class="sb-footer">
+    <div class="admin-row">
+      <div class="admin-av">AD</div>
+      <div><div class="admin-name">Admin User</div><div class="admin-role">Super Admin</div></div>
+      <button class="sb-logout" onclick="window.location.href='landingpage.html'" title="Home">⏏</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">Dashboard Overview</div>
+      <div class="breadcrumb" id="pageCrumb">Admin › Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <span style="opacity:.4;font-size:.88rem;">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search…" oninput="globalSearchFn(this.value)"/>
+      </div>
+      <div class="date-chip" id="todayDate"></div>
+      <div class="tb-btn" onclick="navigate('notifications',null)">🔔<span class="notif-dot"></span></div>
+      <div class="tb-btn" onclick="navigate('settings',null)">⚙️</div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>12,480 Verified Farmers</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>98,340 Happy Customers</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>No Middlemen. Better Prices.</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>₹48.6L Revenue This Month</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>4.7★ Platform Rating</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Same-Day Delivery Across 340 Cities</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>12,480 Verified Farmers</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>98,340 Happy Customers</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>No Middlemen. Better Prices.</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>₹48.6L Revenue This Month</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>4.7★ Platform Rating</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Same-Day Delivery Across 340 Cities</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════════════════════════
+       OVERVIEW
+  ══════════════════════════════ -->
+  <div class="view active" id="view-overview">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-g">💰</div><div class="kpi-trend tr-up">↑ 18.4%</div></div><div class="kpi-val">₹48.6L</div><div class="kpi-lbl">Total Market Revenue</div><div class="kpi-sub">vs ₹41.1L last month · <strong>+₹7.5L</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-gold">🌾</div><div class="kpi-trend tr-up">↑ 6.2%</div></div><div class="kpi-val" id="kpi-farmers">12,480</div><div class="kpi-lbl">Registered Farmers</div><div class="kpi-sub"><span id="kpi-farmers-pend">7</span> pending · <strong>+320 this month</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-bl">📦</div><div class="kpi-trend tr-up">↑ 22.1%</div></div><div class="kpi-val" id="kpi-orders">3,842</div><div class="kpi-lbl">Orders This Month</div><div class="kpi-sub"><span id="kpi-orders-pend">24</span> pending · <strong>3,801 delivered</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-tl">👤</div><div class="kpi-trend tr-up">↑ 11.7%</div></div><div class="kpi-val">98,340</div><div class="kpi-lbl">Total Customers</div><div class="kpi-sub">+2,100 new this month · <strong>82% retained</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-or">📈</div><div class="kpi-trend tr-up">↑ 9.3%</div></div><div class="kpi-val">₹32.1L</div><div class="kpi-lbl">Farmer Earnings</div><div class="kpi-sub">Avg ₹2,574/farmer · <strong>paid within 24h</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-gold">⭐</div><div class="kpi-trend tr-up">↑ 0.2</div></div><div class="kpi-val">4.7/5</div><div class="kpi-lbl">Platform Rating</div><div class="kpi-sub">Based on <strong>14,220 reviews</strong></div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-rd">⚠️</div><div class="kpi-trend tr-dn">↑ 2</div></div><div class="kpi-val" id="kpi-disputes">3</div><div class="kpi-lbl">Open Disputes</div><div class="kpi-sub">Avg resolution <strong>1.8 days</strong> · 18 resolved</div></div>
+    </div>
+
+    <div class="row2 r2a">
+      <div class="chart-card">
+        <div class="ch-hdr">
+          <div><div class="ch-title">Revenue & Sales Trend</div><div class="ch-sub">Monthly market revenue vs farmer earnings</div></div>
+          <div class="ch-filters">
+            <button class="f-btn active" onclick="switchRevFilter(this,'6M')">6M</button>
+            <button class="f-btn" onclick="switchRevFilter(this,'1Y')">1Y</button>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#43a047"></div>Market Revenue</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f9a825"></div>Farmer Earnings</div>
+        </div>
+        <div style="position:relative;height:220px"><canvas id="revenueChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Revenue by Category</div><div class="ch-sub">All 6 product categories</div></div></div>
+        <div style="position:relative;height:180px"><canvas id="donutChart"></canvas></div>
+        <div style="margin-top:12px;" id="donutLegend"></div>
+      </div>
+    </div>
+
+    <div class="row2 r2b">
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Orders per Week</div><div class="ch-sub">Last 8 weeks</div></div></div>
+        <div class="legend"><div class="leg-item"><div class="leg-dot" style="background:#43a047"></div>Delivered</div><div class="leg-item"><div class="leg-dot" style="background:#f9a825"></div>Pending</div></div>
+        <div style="position:relative;height:180px"><canvas id="ordersChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Sales by Category</div><div class="ch-sub">Tonnes sold this month</div></div></div>
+        <div style="position:relative;height:210px"><canvas id="catSalesChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Rating Distribution</div><div class="ch-sub">14,220 reviews this quarter</div></div></div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="ms-val" style="color:var(--green-dark)">4.7</div><div class="ms-lbl">Avg Rating</div></div>
+          <div class="mini-stat"><div class="ms-val">91%</div><div class="ms-lbl">4★ and above</div></div>
+        </div>
+        <div style="position:relative;height:150px"><canvas id="ratingChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row2 r2c">
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Customer Growth & Retention</div><div class="ch-sub">New vs returning customers monthly</div></div></div>
+        <div class="legend"><div class="leg-item"><div class="leg-dot" style="background:#43a047"></div>New</div><div class="leg-item"><div class="leg-dot" style="background:rgba(67,160,71,.25)"></div>Returning</div></div>
+        <div style="position:relative;height:200px"><canvas id="customerChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Top Products</div><div class="ch-sub">By revenue this month</div></div></div>
+        <div class="prod-bar" id="topProductsList"></div>
+      </div>
+    </div>
+
+    <div class="row2 r2d">
+      <div class="tbl-card" style="margin-bottom:0">
+        <div class="tbl-hdr">
+          <div><div class="tbl-title">Top Performing Farmers</div><div class="tbl-sub">Ranked by revenue this month</div></div>
+          <button class="va-btn" onclick="navigate('farmers',null)">View all →</button>
+        </div>
+        <table>
+          <thead><tr><th>Farmer</th><th>Category</th><th>Sales</th><th>Revenue</th><th>Rating</th><th>Status</th></tr></thead>
+          <tbody id="topFarmersBody"></tbody>
+        </table>
+      </div>
+      <div class="chart-card" style="display:flex;flex-direction:column;">
+        <div class="ch-hdr" style="margin-bottom:0"><div><div class="ch-title">Alerts</div><div class="ch-sub">Requires attention</div></div></div>
+        <ul class="alert-list" id="alertList"></ul>
+      </div>
+    </div>
+
+    <div class="row2 r2d" style="margin-top:18px;margin-bottom:0">
+      <div class="tbl-card" style="margin-bottom:0">
+        <div class="tbl-hdr">
+          <div><div class="tbl-title">Recent Orders</div><div class="tbl-sub">Latest transactions</div></div>
+          <button class="va-btn" onclick="navigate('orders',null)">View all →</button>
+        </div>
+        <table>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody id="recentOrdersBody"></tbody>
+        </table>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Sales by State</div><div class="ch-sub">Revenue contribution</div></div></div>
+        <div class="geo-list" id="geoList"></div>
+      </div>
+    </div>
+  </div><!-- /overview -->
+
+  <!-- ══════════════════════════════
+       FARMERS
+  ══════════════════════════════ -->
+  <div class="view" id="view-farmers">
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div><div class="tbl-title">All Farmers</div><div class="tbl-sub" id="farmerCount"></div></div>
+        <div class="tbl-actions"><button class="add-btn" onclick="openAddFarmer()">+ Add Farmer</button></div>
+      </div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div class="filter-bar">
+          <input class="filter-input" id="farmerSearch" placeholder="🔍  Search by name or location…" oninput="renderFarmers()"/>
+          <select class="filter-select" id="farmerCatFilter" onchange="renderFarmers()"><option value="">All Categories</option><option>Fruits</option><option>Vegetables</option><option>Spices</option><option>Herbs</option><option>Rice</option><option>Millets</option></select>
+          <select class="filter-select" id="farmerStatusFilter" onchange="renderFarmers()"><option value="">All Status</option><option>Active</option><option>Pending</option><option>Suspended</option></select>
+          <button class="clear-btn" onclick="clearFarmerFilters()">Clear</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Farmer</th><th>Category</th><th>Location</th><th>Revenue</th><th>Rating</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="farmersBody"></tbody>
+      </table>
+      <div class="pagination" id="farmerPagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PRODUCTS
+  ══════════════════════════════ -->
+  <div class="view" id="view-products">
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div><div class="tbl-title">Products</div><div class="tbl-sub" id="productCount"></div></div>
+        <div class="tbl-actions"><button class="add-btn" onclick="openAddProduct()">+ Add Product</button></div>
+      </div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div class="filter-bar">
+          <input class="filter-input" id="productSearch" placeholder="🔍  Search product…" oninput="renderProducts()"/>
+          <select class="filter-select" id="productCatFilter" onchange="renderProducts()"><option value="">All Categories</option><option>Fruits</option><option>Vegetables</option><option>Spices</option><option>Herbs</option><option>Rice</option><option>Millets</option></select>
+          <select class="filter-select" id="productStatusFilter" onchange="renderProducts()"><option value="">All Status</option><option>Active</option><option>Out of Stock</option><option>Flagged</option></select>
+          <button class="clear-btn" onclick="clearProductFilters()">Clear</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Product</th><th>Category</th><th>Farmer</th><th>Price</th><th>Stock</th><th>Sales</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="productsBody"></tbody>
+      </table>
+      <div class="pagination" id="productPagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       ORDERS
+  ══════════════════════════════ -->
+  <div class="view" id="view-orders">
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div><div class="tbl-title">All Orders</div><div class="tbl-sub" id="orderCount"></div></div>
+      </div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div class="filter-bar">
+          <input class="filter-input" id="orderSearch" placeholder="🔍  Search order ID or customer…" oninput="renderOrders()"/>
+          <select class="filter-select" id="orderStatusFilter" onchange="renderOrders()"><option value="">All Status</option><option>Delivered</option><option>In Transit</option><option>Processing</option><option>Disputed</option><option>Cancelled</option></select>
+          <select class="filter-select" id="orderCatFilter" onchange="renderOrders()"><option value="">All Categories</option><option>Fruits</option><option>Vegetables</option><option>Spices</option><option>Herbs</option><option>Rice</option><option>Millets</option></select>
+          <button class="clear-btn" onclick="clearOrderFilters()">Clear</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Category</th><th>Farmer</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+      <div class="pagination" id="orderPagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       REVENUE
+  ══════════════════════════════ -->
+  <div class="view" id="view-revenue">
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-g">💰</div><div class="kpi-trend tr-up">↑ 18%</div></div><div class="kpi-val">₹48.6L</div><div class="kpi-lbl">Total Revenue</div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-or">🌾</div><div class="kpi-trend tr-up">↑ 9%</div></div><div class="kpi-val">₹32.1L</div><div class="kpi-lbl">Farmer Payouts</div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-ico ico-bl">📦</div><div class="kpi-trend tr-up">↑ 22%</div></div><div class="kpi-val">3,842</div><div class="kpi-lbl">Total Orders</div></div>
+    </div>
+    <div class="row2 r2a">
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Revenue Trend (12 Months)</div><div class="ch-sub">Market revenue vs farmer payouts</div></div></div>
+        <div class="legend"><div class="leg-item"><div class="leg-dot" style="background:#43a047"></div>Revenue</div><div class="leg-item"><div class="leg-dot" style="background:#f9a825"></div>Payouts</div></div>
+        <div style="position:relative;height:240px"><canvas id="revDetailChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Category Revenue Share</div></div></div>
+        <div style="position:relative;height:240px"><canvas id="catRevChart"></canvas></div>
+      </div>
+    </div>
+    <div class="tbl-card" style="margin-top:18px;">
+      <div class="tbl-hdr"><div><div class="tbl-title">Payout Transactions</div><div class="tbl-sub">Recent farmer disbursements</div></div></div>
+      <table><thead><tr><th>Txn ID</th><th>Farmer</th><th>Category</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody id="payoutBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       CUSTOMERS
+  ══════════════════════════════ -->
+  <div class="view" id="view-customers">
+    <div class="tbl-card">
+      <div class="tbl-hdr"><div><div class="tbl-title">Customers</div><div class="tbl-sub" id="customerCount"></div></div></div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div class="filter-bar">
+          <input class="filter-input" id="customerSearch" placeholder="🔍  Search customer…" oninput="renderCustomers()"/>
+          <select class="filter-select" id="customerStatusFilter" onchange="renderCustomers()"><option value="">All</option><option>Active</option><option>Inactive</option></select>
+          <button class="clear-btn" onclick="clearCustomerFilters()">Clear</button>
+        </div>
+      </div>
+      <table><thead><tr><th>Customer</th><th>Email</th><th>City</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="customersBody"></tbody></table>
+      <div class="pagination" id="customerPagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       DISPUTES
+  ══════════════════════════════ -->
+  <div class="view" id="view-disputes">
+    <div class="tbl-card">
+      <div class="tbl-hdr"><div><div class="tbl-title">Disputes</div><div class="tbl-sub" id="disputeCount"></div></div></div>
+      <table><thead><tr><th>Dispute ID</th><th>Order</th><th>Customer</th><th>Farmer</th><th>Issue</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="disputesBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       REVIEWS
+  ══════════════════════════════ -->
+  <div class="view" id="view-reviews">
+    <div class="row2 r2b" style="margin-bottom:18px;">
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Rating Distribution</div></div></div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="ms-val" style="color:var(--green-dark)">4.7</div><div class="ms-lbl">Avg Rating</div></div>
+          <div class="mini-stat"><div class="ms-val">14,220</div><div class="ms-lbl">Total Reviews</div></div>
+        </div>
+        <div style="position:relative;height:150px"><canvas id="ratingChartR"></canvas></div>
+      </div>
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Ratings by Category</div></div></div><div style="position:relative;height:200px"><canvas id="catRatingChart"></canvas></div></div>
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Rating Trend</div><div class="ch-sub">Monthly avg</div></div></div><div style="position:relative;height:200px"><canvas id="ratingTrendChart"></canvas></div></div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-hdr"><div><div class="tbl-title">Recent Reviews</div></div></div>
+      <table><thead><tr><th>Customer</th><th>Product</th><th>Category</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead><tbody id="reviewsBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       ANALYTICS
+  ══════════════════════════════ -->
+  <div class="view" id="view-analytics">
+    <div class="row2 r2b" style="margin-bottom:18px;">
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Monthly Revenue Growth</div><div class="ch-sub">Year on Year</div></div></div><div style="position:relative;height:200px"><canvas id="yoyChart"></canvas></div></div>
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Order Fulfilment Rate</div><div class="ch-sub">By category</div></div></div><div style="position:relative;height:200px"><canvas id="fulfilChart"></canvas></div></div>
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Farmer Earnings Split</div><div class="ch-sub">By category</div></div></div><div style="position:relative;height:200px"><canvas id="farmerEarnChart"></canvas></div></div>
+    </div>
+    <div class="row2 r2a">
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Cumulative Customer Growth</div></div></div><div style="position:relative;height:220px"><canvas id="cumulCustChart"></canvas></div></div>
+      <div class="chart-card"><div class="ch-hdr"><div><div class="ch-title">Sales by State</div></div></div><div class="geo-list" id="geoListAnalytics"></div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       NOTIFICATIONS
+  ══════════════════════════════ -->
+  <div class="view" id="view-notifications">
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div><div class="tbl-title">Notifications</div><div class="tbl-sub">System alerts and activity</div></div>
+        <button class="add-btn" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <ul class="alert-list" id="notifList"></ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SETTINGS
+  ══════════════════════════════ -->
+  <div class="view" id="view-settings">
+    <div class="row2" style="grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Platform Settings</div></div></div>
+        <div class="form-group"><label class="form-label">Platform Name</label><input class="form-ctrl" value="Verdora"/></div>
+        <div class="form-group"><label class="form-label">Free Delivery Threshold (₹)</label><input class="form-ctrl" type="number" value="499"/></div>
+        <div class="form-group"><label class="form-label">Support Email</label><input class="form-ctrl" value="support@verdora.in"/></div>
+        <button class="btn-save" onclick="showToast('Settings saved successfully!','success')">Save Changes</button>
+      </div>
+      <div class="chart-card">
+        <div class="ch-hdr"><div><div class="ch-title">Admin Profile</div></div></div>
+        <div class="form-group"><label class="form-label">Full Name</label><input class="form-ctrl" value="Admin User"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-ctrl" value="admin@verdora.in"/></div>
+        <div class="form-group"><label class="form-label">Role</label><input class="form-ctrl" value="Super Admin" disabled/></div>
+        <div class="form-group"><label class="form-label">New Password</label><input class="form-ctrl" type="password" placeholder="Leave blank to keep current"/></div>
+        <button class="btn-save" onclick="showToast('Profile updated!','success')">Update Profile</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ═══ MODALS ═══ -->
+<!-- Add/Edit Farmer -->
+<div class="modal-overlay" id="modalFarmer">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="farmerModalTitle">Add Farmer</div><button class="modal-close" onclick="closeModal('modalFarmer')">✕</button></div>
+    <input type="hidden" id="farmerEditId"/>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-ctrl" id="fName" placeholder="e.g. Ravi Shankar"/></div>
+      <div class="form-group"><label class="form-label">Location</label><input class="form-ctrl" id="fLoc" placeholder="e.g. Nashik, Maharashtra"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Category</label><select class="form-ctrl" id="fCat"><option>Fruits</option><option>Vegetables</option><option>Spices</option><option>Herbs</option><option>Rice</option><option>Millets</option></select></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-ctrl" id="fPhone" placeholder="+91 98765 43210"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-ctrl" id="fStatus"><option>Active</option><option>Pending</option><option>Suspended</option></select></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-ctrl" id="fEmail" placeholder="farmer@email.com"/></div>
+    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modalFarmer')">Cancel</button><button class="btn-save" onclick="saveFarmer()">Save Farmer</button></div>
+  </div>
+</div>
+
+<!-- Add/Edit Product -->
+<div class="modal-overlay" id="modalProduct">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="productModalTitle">Add Product</div><button class="modal-close" onclick="closeModal('modalProduct')">✕</button></div>
+    <input type="hidden" id="productEditId"/>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Product Name</label><input class="form-ctrl" id="pName" placeholder="e.g. Alphonso Mangoes"/></div>
+      <div class="form-group"><label class="form-label">Category</label><select class="form-ctrl" id="pCat"><option>Fruits</option><option>Vegetables</option><option>Spices</option><option>Herbs</option><option>Rice</option><option>Millets</option></select></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Price (₹/unit)</label><input class="form-ctrl" id="pPrice" type="number" placeholder="e.g. 480"/></div>
+      <div class="form-group"><label class="form-label">Unit</label><input class="form-ctrl" id="pUnit" placeholder="e.g. kg, dozen"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-group"><label class="form-label">Stock Available</label><input class="form-ctrl" id="pStock" type="number" placeholder="e.g. 500"/></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-ctrl" id="pStatus"><option>Active</option><option>Out of Stock</option><option>Flagged</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Farmer</label><select class="form-ctrl" id="pFarmer"></select></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modalProduct')">Cancel</button><button class="btn-save" onclick="saveProduct()">Save Product</button></div>
+  </div>
+</div>
+
+<!-- View Order -->
+<div class="modal-overlay" id="modalOrder">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="orderModalTitle">Order Details</div><button class="modal-close" onclick="closeModal('modalOrder')">✕</button></div>
+    <div id="orderModalBody"></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modalOrder')">Close</button><button class="btn-save" id="orderActionBtn" onclick="updateOrderStatus()">Mark Delivered</button></div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal modal-sm">
+    <div class="confirm-body"><div class="confirm-icon">🗑️</div><div class="confirm-title" id="confirmTitle">Delete Record?</div><div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modalConfirm')">Cancel</button><button class="btn-danger" id="confirmOkBtn">Delete</button></div>
+  </div>
+</div>
+
+<!-- Dispute Resolve -->
+<div class="modal-overlay" id="modalDispute">
+  <div class="modal modal-sm">
+    <div class="modal-hdr"><div class="modal-title">Resolve Dispute</div><button class="modal-close" onclick="closeModal('modalDispute')">✕</button></div>
+    <input type="hidden" id="disputeEditId"/>
+    <div class="form-group"><label class="form-label">Resolution</label><select class="form-ctrl" id="disputeResolution"><option>Refund to Customer</option><option>Resend Product</option><option>No Action – Dismissed</option><option>Penalty to Farmer</option></select></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-ctrl" id="disputeNotes" rows="3" placeholder="Add resolution notes…"></textarea></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modalDispute')">Cancel</button><button class="btn-save" onclick="resolveDispute()">Resolve</button></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA (identical to original)
+══════════════════════════════════════════════ */
+const CATS=['Fruits','Vegetables','Spices','Herbs','Rice','Millets'];
+const CAT_COLORS={Fruits:'#e65100',Vegetables:'#2e7d32',Spices:'#c62828',Herbs:'#00695c',Rice:'#8a6a00',Millets:'#6a1b9a'};
+const CAT_BG={Fruits:'rgba(230,81,0,.18)',Vegetables:'rgba(46,125,50,.18)',Spices:'rgba(198,40,40,.18)',Herbs:'rgba(0,105,92,.18)',Rice:'rgba(138,106,0,.18)',Millets:'rgba(106,27,154,.18)'};
+const CAT_EMOJI={Fruits:'🍎',Vegetables:'🥦',Spices:'🌶️',Herbs:'🌿',Rice:'🌾',Millets:'🌻'};
+
+let farmers=[
+  {id:1,name:'Ravi Shankar',loc:'Nashik, Maharashtra',cat:'Vegetables',phone:'+91 98765 43210',email:'ravi@farm.in',revenue:82400,rating:5,joined:'2022-03-14',status:'Active',sales:'1,240 kg'},
+  {id:2,name:'Kavitha Menon',loc:'Coimbatore, Tamil Nadu',cat:'Fruits',phone:'+91 97654 32109',email:'kavitha@farm.in',revenue:74200,rating:5,joined:'2022-06-22',status:'Active',sales:'980 kg'},
+  {id:3,name:'Suresh Patil',loc:'Pune, Maharashtra',cat:'Rice',phone:'+91 96543 21098',email:'suresh@farm.in',revenue:68900,rating:4,joined:'2021-11-05',status:'Active',sales:'2,100 kg'},
+  {id:4,name:'Arjun Reddy',loc:'Guntur, Andhra Pradesh',cat:'Spices',phone:'+91 95432 10987',email:'arjun@farm.in',revenue:54100,rating:4,joined:'2023-01-18',status:'Pending',sales:'870 kg'},
+  {id:5,name:'Meena Iyer',loc:'Ooty, Tamil Nadu',cat:'Herbs',phone:'+91 94321 09876',email:'meena@farm.in',revenue:48600,rating:5,joined:'2023-04-30',status:'Active',sales:'620 kg'},
+  {id:6,name:'Baldev Singh',loc:'Amritsar, Punjab',cat:'Rice',phone:'+91 93210 98765',email:'baldev@farm.in',revenue:43200,rating:4,joined:'2022-09-12',status:'Active',sales:'1,800 kg'},
+  {id:7,name:'Lakshmi Devi',loc:'Mysuru, Karnataka',cat:'Millets',phone:'+91 92109 87654',email:'lakshmi@farm.in',revenue:38700,rating:5,joined:'2023-07-08',status:'Active',sales:'950 kg'},
+  {id:8,name:'Pradeep Kumar',loc:'Varanasi, Uttar Pradesh',cat:'Vegetables',phone:'+91 91098 76543',email:'pradeep@farm.in',revenue:31200,rating:3,joined:'2023-11-20',status:'Pending',sales:'640 kg'},
+  {id:9,name:'Sunita Rathore',loc:'Jaipur, Rajasthan',cat:'Spices',phone:'+91 90987 65432',email:'sunita@farm.in',revenue:28900,rating:4,joined:'2024-01-15',status:'Pending',sales:'380 kg'},
+  {id:10,name:'Thomas Varghese',loc:'Kochi, Kerala',cat:'Fruits',phone:'+91 89876 54321',email:'thomas@farm.in',revenue:26400,rating:3,joined:'2024-02-28',status:'Active',sales:'310 kg'},
+  {id:11,name:'Geeta Sharma',loc:'Lucknow, Uttar Pradesh',cat:'Millets',phone:'+91 88765 43210',email:'geeta@farm.in',revenue:21800,rating:4,joined:'2024-03-05',status:'Suspended',sales:'280 kg'},
+  {id:12,name:'Rajkumar Pillai',loc:'Trivandrum, Kerala',cat:'Herbs',phone:'+91 87654 32109',email:'rajkumar@farm.in',revenue:19600,rating:5,joined:'2024-03-18',status:'Active',sales:'240 kg'},
+];
+
+let products=[
+  {id:1,name:'Alphonso Mangoes',cat:'Fruits',farmer:'Kavitha Menon',price:480,unit:'dozen',stock:340,sales:892,status:'Active'},
+  {id:2,name:'Desi Tomatoes',cat:'Vegetables',farmer:'Ravi Shankar',price:32,unit:'kg',stock:1200,sales:2840,status:'Active'},
+  {id:3,name:'Basmati Rice',cat:'Rice',farmer:'Baldev Singh',price:120,unit:'kg',stock:2400,sales:1920,status:'Active'},
+  {id:4,name:'Baby Spinach',cat:'Vegetables',farmer:'Ravi Shankar',price:28,unit:'bunch',stock:600,sales:1240,status:'Active'},
+  {id:5,name:'Red Chillis (Dry)',cat:'Spices',farmer:'Arjun Reddy',price:180,unit:'kg',stock:480,sales:760,status:'Active'},
+  {id:6,name:'Organic Turmeric',cat:'Spices',farmer:'Sunita Rathore',price:220,unit:'kg',stock:360,sales:640,status:'Active'},
+  {id:7,name:'Curry Leaves',cat:'Herbs',farmer:'Meena Iyer',price:20,unit:'bunch',stock:800,sales:1640,status:'Active'},
+  {id:8,name:'Basil Leaves',cat:'Herbs',farmer:'Rajkumar Pillai',price:35,unit:'bunch',stock:420,sales:880,status:'Active'},
+  {id:9,name:'Foxtail Millet',cat:'Millets',farmer:'Lakshmi Devi',price:90,unit:'kg',stock:720,sales:580,status:'Active'},
+  {id:10,name:'Pearl Millet (Bajra)',cat:'Millets',farmer:'Geeta Sharma',price:65,unit:'kg',stock:0,sales:340,status:'Out of Stock'},
+  {id:11,name:'Kesar Mangoes',cat:'Fruits',farmer:'Thomas Varghese',price:520,unit:'dozen',stock:180,sales:420,status:'Active'},
+  {id:12,name:'Ponni Raw Rice',cat:'Rice',farmer:'Suresh Patil',price:85,unit:'kg',stock:3200,sales:2240,status:'Active'},
+  {id:13,name:'Red Carrots',cat:'Vegetables',farmer:'Pradeep Kumar',price:44,unit:'kg',stock:940,sales:1080,status:'Active'},
+  {id:14,name:'Black Pepper',cat:'Spices',farmer:'Arjun Reddy',price:480,unit:'kg',stock:0,sales:480,status:'Out of Stock'},
+  {id:15,name:'Moringa Leaves',cat:'Herbs',farmer:'Meena Iyer',price:45,unit:'bunch',stock:240,sales:360,status:'Flagged'},
+];
+
+let orders=[
+  {id:'#84312',customer:'Priya Nair',product:'Alphonso Mangoes · 2 dozen',cat:'Fruits',farmer:'Kavitha Menon',amount:960,date:'2026-03-20 09:14',status:'Delivered'},
+  {id:'#84311',customer:'Rohit Verma',product:'Desi Tomatoes · 5 kg',cat:'Vegetables',farmer:'Ravi Shankar',amount:160,date:'2026-03-20 08:52',status:'In Transit'},
+  {id:'#84310',customer:'Anjali Das',product:'Baby Spinach · 3 bunches',cat:'Vegetables',farmer:'Ravi Shankar',amount:84,date:'2026-03-20 08:30',status:'Processing'},
+  {id:'#84309',customer:'Karan Mehta',product:'Basmati Rice · 10 kg',cat:'Rice',farmer:'Baldev Singh',amount:680,date:'2026-03-19 19:10',status:'Delivered'},
+  {id:'#84308',customer:'Divya Pillai',product:'Organic Turmeric · 2 kg',cat:'Spices',farmer:'Sunita Rathore',amount:440,date:'2026-03-19 17:45',status:'Delivered'},
+  {id:'#84307',customer:'Akash Joshi',product:'Foxtail Millet · 5 kg',cat:'Millets',farmer:'Lakshmi Devi',amount:450,date:'2026-03-19 15:20',status:'In Transit'},
+  {id:'#84306',customer:'Neha Gupta',product:'Curry Leaves · 5 bunches',cat:'Herbs',farmer:'Meena Iyer',amount:100,date:'2026-03-19 13:00',status:'Delivered'},
+  {id:'#84305',customer:'Vikram Shetty',product:'Red Chillis · 1 kg',cat:'Spices',farmer:'Arjun Reddy',amount:180,date:'2026-03-19 11:30',status:'Cancelled'},
+  {id:'#84291',customer:'Sunita Sharma',product:'Red Carrots · 3 kg',cat:'Vegetables',farmer:'Pradeep Kumar',amount:132,date:'2026-03-18 15:40',status:'Disputed'},
+  {id:'#84285',customer:'Manoj Tiwari',product:'Kesar Mangoes · 1 dozen',cat:'Fruits',farmer:'Thomas Varghese',amount:520,date:'2026-03-18 10:20',status:'Delivered'},
+  {id:'#84280',customer:'Rekha Nair',product:'Ponni Raw Rice · 25 kg',cat:'Rice',farmer:'Suresh Patil',amount:2125,date:'2026-03-17 09:50',status:'Delivered'},
+  {id:'#84278',customer:'Arun Krishnan',product:'Basil Leaves · 2 bunches',cat:'Herbs',farmer:'Rajkumar Pillai',amount:70,date:'2026-03-17 08:15',status:'Delivered'},
+];
+
+let disputes=[
+  {id:'#D001',orderId:'#84291',customer:'Sunita Sharma',farmer:'Pradeep Kumar',issue:'Wrong item delivered — received radish instead of carrots',date:'2026-03-18',status:'Open'},
+  {id:'#D002',orderId:'#84250',customer:'Ritu Agarwal',farmer:'Geeta Sharma',issue:'Product quality very poor — millets had moisture damage',date:'2026-03-16',status:'Open'},
+  {id:'#D003',orderId:'#84210',customer:'Harish Kumar',farmer:'Arjun Reddy',issue:'Spices mislabelled — received paprika labelled as turmeric',date:'2026-03-12',status:'Open'},
+  {id:'#D004',orderId:'#84180',customer:'Preethi Nair',farmer:'Ravi Shankar',issue:'Partial delivery — only 3 kg of 5 kg received',date:'2026-03-08',status:'Resolved'},
+  {id:'#D005',orderId:'#84150',customer:'Sandeep Rao',farmer:'Baldev Singh',issue:'Broken packaging — rice spilled inside the box',date:'2026-03-04',status:'Resolved'},
+];
+
+let reviews=[
+  {customer:'Priya Nair',product:'Alphonso Mangoes',cat:'Fruits',rating:5,comment:'Absolutely fresh and sweet! Best mangoes I have had.',date:'2026-03-20'},
+  {customer:'Karan Mehta',product:'Basmati Rice',cat:'Rice',rating:4,comment:'Good quality, cooks perfectly. Slight delay in delivery.',date:'2026-03-19'},
+  {customer:'Neha Gupta',product:'Curry Leaves',cat:'Herbs',rating:5,comment:'So aromatic and fresh! Will definitely reorder.',date:'2026-03-19'},
+  {customer:'Divya Pillai',product:'Organic Turmeric',cat:'Spices',rating:5,comment:'Pure and authentic quality. Very happy with the purchase.',date:'2026-03-19'},
+  {customer:'Akash Joshi',product:'Foxtail Millet',cat:'Millets',rating:4,comment:'Good quality grain. Packed well and delivered on time.',date:'2026-03-19'},
+  {customer:'Manoj Tiwari',product:'Kesar Mangoes',cat:'Fruits',rating:3,comment:'Mangoes were good but a couple were overripe on arrival.',date:'2026-03-18'},
+  {customer:'Rekha Nair',product:'Ponni Raw Rice',cat:'Rice',rating:5,comment:'Excellent quality rice. Our family loved it.',date:'2026-03-17'},
+  {customer:'Arun Krishnan',product:'Basil Leaves',cat:'Herbs',rating:4,comment:'Fresh and fragrant. Packaging could be better.',date:'2026-03-17'},
+  {customer:'Rohit Verma',product:'Desi Tomatoes',cat:'Vegetables',rating:3,comment:'Tomatoes were okay. A few were bruised.',date:'2026-03-16'},
+];
+
+let customers=[
+  {id:1,name:'Priya Nair',email:'priya@email.com',city:'Bangalore',orders:14,spent:8640,joined:'2023-02-10',status:'Active'},
+  {id:2,name:'Karan Mehta',email:'karan@email.com',city:'Mumbai',orders:9,spent:4820,joined:'2023-05-18',status:'Active'},
+  {id:3,name:'Anjali Das',email:'anjali@email.com',city:'Kolkata',orders:6,spent:2140,joined:'2023-08-22',status:'Active'},
+  {id:4,name:'Rohit Verma',email:'rohit@email.com',city:'Delhi',orders:4,spent:1280,joined:'2024-01-05',status:'Active'},
+  {id:5,name:'Divya Pillai',email:'divya@email.com',city:'Chennai',orders:11,spent:5940,joined:'2023-03-14',status:'Active'},
+  {id:6,name:'Akash Joshi',email:'akash@email.com',city:'Pune',orders:7,spent:3240,joined:'2023-07-28',status:'Active'},
+  {id:7,name:'Neha Gupta',email:'neha@email.com',city:'Hyderabad',orders:3,spent:980,joined:'2024-02-18',status:'Inactive'},
+  {id:8,name:'Manoj Tiwari',email:'manoj@email.com',city:'Lucknow',orders:2,spent:640,joined:'2024-03-01',status:'Active'},
+  {id:9,name:'Rekha Nair',email:'rekha@email.com',city:'Kochi',orders:18,spent:12400,joined:'2022-11-20',status:'Active'},
+  {id:10,name:'Arun Krishnan',email:'arun@email.com',city:'Coimbatore',orders:5,spent:1820,joined:'2023-09-15',status:'Active'},
+];
+
+let notifications=[
+  {msg:'7 new farmer registrations pending verification',time:'10 minutes ago',color:'#f9a825',read:false},
+  {msg:'Dispute #D003 raised — spice mislabelling reported',time:'32 minutes ago',color:'#e53935',read:false},
+  {msg:'₹1.4L successfully disbursed to 38 farmers',time:'1 hour ago',color:'#43a047',read:false},
+  {msg:'Product listing flagged — Pune vendor, suspected counterfeit',time:'3 hours ago',color:'#e53935',read:false},
+  {msg:'Monthly report for March 2026 is ready to download',time:'5 hours ago',color:'#1565c0',read:true},
+  {msg:'Platform crossed 98,000 registered customers milestone 🎉',time:'Yesterday',color:'#43a047',read:true},
+  {msg:'Black Pepper stock out — 2 farmers affected',time:'Yesterday',color:'#f9a825',read:true},
+  {msg:'New category request: Nuts & Dry Fruits from 12 farmers',time:'2 days ago',color:'#6a1b9a',read:true},
+];
+
+let payouts=[
+  {id:'#TXN4421',farmer:'Ravi Shankar',cat:'Vegetables',amount:'₹82,400',date:'2026-03-20',status:'Completed'},
+  {id:'#TXN4420',farmer:'Kavitha Menon',cat:'Fruits',amount:'₹74,200',date:'2026-03-20',status:'Completed'},
+  {id:'#TXN4419',farmer:'Suresh Patil',cat:'Rice',amount:'₹68,900',date:'2026-03-19',status:'Completed'},
+  {id:'#TXN4418',farmer:'Meena Iyer',cat:'Herbs',amount:'₹48,600',date:'2026-03-19',status:'Processing'},
+  {id:'#TXN4417',farmer:'Baldev Singh',cat:'Rice',amount:'₹43,200',date:'2026-03-18',status:'Completed'},
+  {id:'#TXN4416',farmer:'Lakshmi Devi',cat:'Millets',amount:'₹38,700',date:'2026-03-18',status:'Processing'},
+  {id:'#TXN4415',farmer:'Arjun Reddy',cat:'Spices',amount:'₹54,100',date:'2026-03-17',status:'Pending'},
+];
+
+/* ══ PAGINATION STATE ══ */
+const PAGE_SIZE=8;
+let farmerPage=1,productPage=1,orderPage=1,customerPage=1;
+let currentOrderId=null;
+
+/* ══ NAVIGATION ══ */
+const pageLabels={overview:'Dashboard Overview',farmers:'Farmers',products:'Products',orders:'Orders',revenue:'Revenue',customers:'Customers',disputes:'Disputes',reviews:'Reviews',analytics:'Analytics',notifications:'Notifications',settings:'Settings'};
+const pageCrumbs={overview:'Admin › Overview',farmers:'Admin › People › Farmers',products:'Admin › Products',orders:'Admin › Orders',revenue:'Admin › Revenue',customers:'Admin › People › Customers',disputes:'Admin › People › Disputes',reviews:'Admin › Reviews',analytics:'Admin › Analytics',notifications:'Admin › Notifications',settings:'Admin › Settings'};
+
+function navigate(view,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(i=>{if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes("'"+view+"'"))i.classList.add('active');});
+  document.getElementById('pageTitle').textContent=pageLabels[view]||view;
+  document.getElementById('pageCrumb').textContent=pageCrumbs[view]||'';
+  const inits={overview:initOverviewCharts,revenue:()=>{initRevenueCharts();renderPayouts();},analytics:initAnalyticsCharts,reviews:initReviewCharts,farmers:renderFarmers,products:renderProducts,orders:renderOrders,customers:renderCustomers,disputes:renderDisputes,notifications:renderNotifications};
+  if(inits[view])inits[view]();
+}
+
+/* ══ UTILITIES ══ */
+function showToast(msg,type='success'){
+  const wrap=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span> ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(20px)';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function stars(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
+function catBadge(cat){return `<span class="cat-badge cat-${cat.toLowerCase()}">${CAT_EMOJI[cat]||''} ${cat}</span>`;}
+function statusPill(s){const map={Delivered:'pg',Active:'pg','In Transit':'pb',Processing:'pgold',Pending:'pgold',Disputed:'pr',Cancelled:'pr',Suspended:'pr',Flagged:'pr',Resolved:'pg','Out of Stock':'pgold','Completed':'pg'};return `<span class="pill ${map[s]||'pgold'}"><span class="pill-dot"></span>${s}</span>`;}
+function fmt(n){return '₹'+n.toLocaleString('en-IN');}
+function paginate(arr,page,size=PAGE_SIZE){return arr.slice((page-1)*size,page*size);}
+function paginationHTML(total,page,size,onChange){
+  const pages=Math.ceil(total/size);if(pages<=1)return '';
+  let h=`<button class="pg-btn" onclick="${onChange}(${page-1})" ${page<=1?'disabled':''}>←</button>`;
+  for(let i=1;i<=pages;i++)h+=`<button class="pg-btn ${i===page?'active':''}" onclick="${onChange}(${i})">${i}</button>`;
+  h+=`<button class="pg-btn" onclick="${onChange}(${page+1})" ${page>=pages?'disabled':''}>→</button>`;
+  h+=`<span class="pg-info">Showing ${(page-1)*size+1}–${Math.min(page*size,total)} of ${total}</span>`;
+  return h;
+}
+
+/* ══ CHART DEFAULTS ══ */
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.color='#7a9a77';
+const GC='rgba(102,187,106,0.1)';
+const TC='#7a9a77';
+const TT={backgroundColor:'#fff',titleColor:'#1a2e1a',bodyColor:'#4a6741',borderColor:'rgba(102,187,106,.3)',borderWidth:1,padding:10};
+const chartInstances={};
+function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
+function makeChart(id,cfg){destroyChart(id);chartInstances[id]=new Chart(document.getElementById(id),cfg);return chartInstances[id];}
+
+/* ══ OVERVIEW CHARTS ══ */
+const revData={
+  '6M':{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],rev:[32,36,41,38,44,48.6],earn:[21,24,27,25,29,32.1]},
+  '1Y':{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],rev:[24,27,30,28,32,35,36,40,44,40,44,48.6],earn:[15,18,20,18,21,23,24,26,29,27,30,32.1]}
+};
+let revFilter='6M';
+function switchRevFilter(btn,f){document.querySelectorAll('.ch-filters .f-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');revFilter=f;const c=chartInstances['revenueChart'];if(!c)return;const d=revData[f];c.data.labels=d.labels;c.data.datasets[0].data=d.rev;c.data.datasets[1].data=d.earn;c.update();}
+const CAT_REVENUE={Fruits:18.4,Vegetables:16.2,Spices:5.8,Herbs:3.1,Rice:3.7,Millets:1.4};
+
+function initOverviewCharts(){
+  const d=revData[revFilter];
+  makeChart('revenueChart',{type:'line',data:{labels:d.labels,datasets:[
+    {label:'Revenue',data:d.rev,borderColor:'#43a047',backgroundColor:'rgba(67,160,71,.08)',borderWidth:2.5,fill:true,tension:.4,pointBackgroundColor:'#43a047',pointRadius:4,pointHoverRadius:6},
+    {label:'Farmer Earnings',data:d.earn,borderColor:'#f9a825',backgroundColor:'rgba(249,168,37,.06)',borderWidth:2.5,fill:true,tension:.4,pointBackgroundColor:'#f9a825',pointRadius:4,pointHoverRadius:6}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ₹${c.parsed.y}L`}}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:11}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:11},callback:v=>'₹'+v+'L'}}}}});
+
+  makeChart('donutChart',{type:'doughnut',data:{labels:CATS,datasets:[{data:CATS.map(c=>CAT_REVENUE[c]),backgroundColor:CATS.map(c=>CAT_BG[c]),borderColor:CATS.map(c=>CAT_COLORS[c]),borderWidth:2,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ₹${c.parsed}L`}}}}});
+  document.getElementById('donutLegend').innerHTML=CATS.map(c=>`<div class="rev-split-row"><div><span class="rev-split-dot" style="background:${CAT_COLORS[c]}"></span>${CAT_EMOJI[c]} ${c}</div><strong>₹${CAT_REVENUE[c]}L</strong></div>`).join('');
+
+  makeChart('ordersChart',{type:'bar',data:{labels:['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8'],datasets:[{label:'Delivered',data:[380,420,390,460,510,490,540,480],backgroundColor:'rgba(67,160,71,.82)',borderRadius:5,borderSkipped:false},{label:'Pending',data:[20,18,15,22,14,18,12,24],backgroundColor:'rgba(249,168,37,.82)',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:TC,font:{size:10}}},y:{stacked:true,grid:{color:GC},ticks:{color:TC,font:{size:10}}}}}});
+
+  makeChart('catSalesChart',{type:'bar',data:{labels:CATS,datasets:[{label:'Tonnes',data:[620,840,280,140,580,190],backgroundColor:CATS.map(c=>CAT_BG[c]),borderColor:CATS.map(c=>CAT_COLORS[c]),borderWidth:2,borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.parsed.x} tonnes`}}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{grid:{display:false},ticks:{color:TC,font:{size:10}}}}}});
+
+  makeChart('ratingChart',{type:'bar',data:{labels:['5★','4★','3★','2★','1★'],datasets:[{data:[7840,5120,890,240,130],backgroundColor:['rgba(67,160,71,.85)','rgba(67,160,71,.65)','rgba(249,168,37,.7)','rgba(230,81,0,.6)','rgba(198,40,40,.65)'],borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.parsed.y.toLocaleString('en-IN')} reviews`}}},scales:{x:{grid:{display:false},ticks:{color:TC,font:{size:11}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(1)+'K':v}}}}});
+
+  makeChart('customerChart',{type:'bar',data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'New',data:[1200,1400,1600,1350,1700,1900,2100,1800,2200,1950,2050,2100],backgroundColor:'rgba(67,160,71,.82)',borderRadius:4,borderSkipped:false},{label:'Returning',data:[4200,4600,5100,5400,5800,6200,6700,7000,7500,7800,8100,8400],backgroundColor:'rgba(67,160,71,.18)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:TC,font:{size:10}}},y:{stacked:true,grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}}}}});
+
+  const topP=[...products].sort((a,b)=>b.sales-a.sales).slice(0,6);
+  const maxS=topP[0].sales;
+  document.getElementById('topProductsList').innerHTML=topP.map((p,i)=>`<div class="prod-row"><div class="prod-rank">${i+1}</div><div class="prod-info"><div class="prod-name">${p.name}</div><div class="prod-cat">${CAT_EMOJI[p.cat]} ${p.cat}</div></div><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(p.sales/maxS*100)}%"></div></div><div class="bar-pct">${Math.round(p.sales/maxS*100)}%</div></div><div class="prod-val">${fmt(p.price*p.sales/100)}</div></div>`).join('');
+
+  const topF=[...farmers].sort((a,b)=>b.revenue-a.revenue).slice(0,5);
+  document.getElementById('topFarmersBody').innerHTML=topF.map(f=>`<tr><td><div class="farmer-cell"><div class="f-av">👨‍🌾</div><div><div class="f-name">${f.name}</div><div class="f-loc">📍 ${f.loc}</div></div></div></td><td>${catBadge(f.cat)}</td><td>${f.sales}</td><td><strong>${fmt(f.revenue)}</strong></td><td><span class="stars">${stars(f.rating)}</span></td><td>${statusPill(f.status)}</td></tr>`).join('');
+
+  document.getElementById('alertList').innerHTML=notifications.filter(n=>!n.read).slice(0,6).map(n=>`<li class="alert-item"><div class="al-dot" style="background:${n.color}"></div><div class="al-body"><div class="al-msg">${n.msg}</div><div class="al-time">${n.time}</div></div><button class="al-act" onclick="navigate('notifications',null)">View</button></li>`).join('');
+  document.getElementById('recentOrdersBody').innerHTML=orders.slice(0,6).map(o=>`<tr><td><strong>${o.id}</strong></td><td>${o.customer}</td><td>${o.product}</td><td>${fmt(o.amount)}</td><td>${statusPill(o.status)}</td></tr>`).join('');
+
+  const geo=[{flag:'🏛️',name:'Maharashtra',pct:84,val:'₹14.2L'},{flag:'🌴',name:'Tamil Nadu',pct:68,val:'₹9.8L'},{flag:'🌾',name:'Punjab',pct:55,val:'₹7.4L'},{flag:'🌿',name:'Karnataka',pct:46,val:'₹6.1L'},{flag:'🌶️',name:'Andhra Pradesh',pct:38,val:'₹4.9L'},{flag:'🐘',name:'Uttar Pradesh',pct:29,val:'₹3.8L'},{flag:'🏔️',name:'Himachal Pradesh',pct:18,val:'₹2.4L'}];
+  document.getElementById('geoList').innerHTML=geo.map(g=>`<div class="geo-item"><span class="geo-flag">${g.flag}</span><span class="geo-name">${g.name}</span><div class="geo-bw"><div class="geo-bb"><div class="geo-bf" style="width:${g.pct}%"></div></div></div><span class="geo-val">${g.val}</span></div>`).join('');
+}
+
+/* ══ REVENUE CHARTS ══ */
+function initRevenueCharts(){
+  const d=revData['1Y'];
+  makeChart('revDetailChart',{type:'line',data:{labels:d.labels,datasets:[{label:'Revenue',data:d.rev,borderColor:'#43a047',backgroundColor:'rgba(67,160,71,.08)',borderWidth:2.5,fill:true,tension:.4,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#43a047'},{label:'Payouts',data:d.earn,borderColor:'#f9a825',backgroundColor:'rgba(249,168,37,.06)',borderWidth:2.5,fill:true,tension:.4,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#f9a825'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ₹${c.parsed.y}L`}}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>'₹'+v+'L'}}}}});
+  makeChart('catRevChart',{type:'polarArea',data:{labels:CATS,datasets:[{data:CATS.map(c=>CAT_REVENUE[c]),backgroundColor:CATS.map(c=>CAT_BG[c]),borderColor:CATS.map(c=>CAT_COLORS[c]),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:10},color:TC}},tooltip:{...TT,callbacks:{label:c=>` ₹${c.parsed.r}L`}}}}});
+}
+function renderPayouts(){document.getElementById('payoutBody').innerHTML=payouts.map(p=>`<tr><td><strong>${p.id}</strong></td><td>${p.farmer}</td><td>${catBadge(p.cat)}</td><td><strong>${p.amount}</strong></td><td>${p.date}</td><td>${statusPill(p.status)}</td></tr>`).join('');}
+
+/* ══ ANALYTICS CHARTS ══ */
+function initAnalyticsCharts(){
+  makeChart('yoyChart',{type:'line',data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'2024',data:[24,27,30,28,32,35,36,40,44,40,44,48.6],borderColor:'#43a047',backgroundColor:'rgba(67,160,71,.1)',fill:true,tension:.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#43a047'},{label:'2023',data:[16,18,20,19,21,23,24,26,28,27,28,31],borderColor:'rgba(67,160,71,.4)',borderDash:[5,4],borderWidth:2,tension:.4,pointRadius:3,pointBackgroundColor:'rgba(67,160,71,.4)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:TC,font:{size:10}}},tooltip:{...TT,callbacks:{label:c=>` ₹${c.parsed.y}L`}}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>'₹'+v+'L'}}}}});
+  makeChart('fulfilChart',{type:'bar',data:{labels:CATS,datasets:[{label:'Fulfilment %',data:[98,96,94,97,99,95],backgroundColor:CATS.map(c=>CAT_BG[c]),borderColor:CATS.map(c=>CAT_COLORS[c]),borderWidth:2,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.parsed.y}%`}}},scales:{x:{grid:{display:false},ticks:{color:TC,font:{size:10}}},y:{min:90,max:100,grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>v+'%'}}}}});
+  makeChart('farmerEarnChart',{type:'doughnut',data:{labels:CATS,datasets:[{data:[10.2,9.8,4.2,2.1,3.6,2.2],backgroundColor:CATS.map(c=>CAT_BG[c]),borderColor:CATS.map(c=>CAT_COLORS[c]),borderWidth:2,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10},color:TC}},tooltip:{...TT,callbacks:{label:c=>` ₹${c.parsed}L`}}}}});
+  makeChart('cumulCustChart',{type:'line',data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Customers',data:[68000,71000,74000,76000,79000,83000,87000,90000,93000,95000,97000,98340],borderColor:'#43a047',backgroundColor:'rgba(67,160,71,.1)',fill:true,tension:.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#43a047'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.parsed.y.toLocaleString('en-IN')}`}}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}}}}});
+  const geo=[{flag:'🏛️',name:'Maharashtra',pct:84,val:'₹14.2L'},{flag:'🌴',name:'Tamil Nadu',pct:68,val:'₹9.8L'},{flag:'🌾',name:'Punjab',pct:55,val:'₹7.4L'},{flag:'🌿',name:'Karnataka',pct:46,val:'₹6.1L'},{flag:'🌶️',name:'Andhra Pradesh',pct:38,val:'₹4.9L'},{flag:'🐘',name:'Uttar Pradesh',pct:29,val:'₹3.8L'}];
+  document.getElementById('geoListAnalytics').innerHTML=geo.map(g=>`<div class="geo-item"><span class="geo-flag">${g.flag}</span><span class="geo-name">${g.name}</span><div class="geo-bw"><div class="geo-bb"><div class="geo-bf" style="width:${g.pct}%"></div></div></div><span class="geo-val">${g.val}</span></div>`).join('');
+}
+
+/* ══ REVIEW CHARTS ══ */
+function initReviewCharts(){
+  makeChart('ratingChartR',{type:'bar',data:{labels:['5★','4★','3★','2★','1★'],datasets:[{data:[7840,5120,890,240,130],backgroundColor:['rgba(67,160,71,.85)','rgba(67,160,71,.65)','rgba(249,168,37,.7)','rgba(230,81,0,.6)','rgba(198,40,40,.65)'],borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.parsed.y.toLocaleString('en-IN')} reviews`}}},scales:{x:{grid:{display:false},ticks:{color:TC,font:{size:11}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(1)+'K':v}}}}});
+  makeChart('catRatingChart',{type:'radar',data:{labels:CATS,datasets:[{label:'Avg Rating',data:[4.8,4.6,4.5,4.9,4.7,4.4],backgroundColor:'rgba(67,160,71,.15)',borderColor:'#43a047',borderWidth:2,pointBackgroundColor:'#43a047',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:3,max:5,ticks:{color:TC,font:{size:9},stepSize:.5},grid:{color:GC},pointLabels:{color:TC,font:{size:10}}}},plugins:{legend:{display:false},tooltip:{...TT}}}});
+  makeChart('ratingTrendChart',{type:'line',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Avg Rating',data:[4.4,4.5,4.5,4.6,4.6,4.7],borderColor:'#f9a825',backgroundColor:'rgba(249,168,37,.08)',fill:true,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#f9a825',pointHoverRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT}},scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{min:4,max:5,grid:{color:GC},ticks:{color:TC,font:{size:10},stepSize:.2}}}}});
+  document.getElementById('reviewsBody').innerHTML=reviews.map(r=>`<tr><td><strong>${r.customer}</strong></td><td>${r.product}</td><td>${catBadge(r.cat)}</td><td><span class="stars">${stars(r.rating)}</span></td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.comment}</td><td>${r.date}</td><td><button class="act-icon" onclick="deleteReview('${r.customer}','${r.product}')" title="Remove">🗑️</button></td></tr>`).join('');
+}
+function deleteReview(cust,prod){confirmAction(`Remove review by ${cust}?`,'This review will be permanently removed.',()=>{const idx=reviews.findIndex(r=>r.customer===cust&&r.product===prod);if(idx>-1){reviews.splice(idx,1);initReviewCharts();showToast('Review removed','success');}});}
+
+/* ══ FARMERS CRUD ══ */
+function renderFarmers(){
+  const q=(document.getElementById('farmerSearch').value||'').toLowerCase();
+  const cat=document.getElementById('farmerCatFilter').value;
+  const st=document.getElementById('farmerStatusFilter').value;
+  let data=farmers.filter(f=>{if(q&&!f.name.toLowerCase().includes(q)&&!f.loc.toLowerCase().includes(q))return false;if(cat&&f.cat!==cat)return false;if(st&&f.status!==st)return false;return true;});
+  document.getElementById('farmerCount').textContent=`${data.length} farmer${data.length!==1?'s':''} found`;
+  const paged=paginate(data,farmerPage);
+  document.getElementById('farmersBody').innerHTML=paged.length?paged.map(f=>`<tr><td><div class="farmer-cell"><div class="f-av">👨‍🌾</div><div><div class="f-name">${f.name}</div><div class="f-loc">${f.email}</div></div></div></td><td>${catBadge(f.cat)}</td><td>📍 ${f.loc}</td><td><strong>${fmt(f.revenue)}</strong></td><td><span class="stars">${stars(f.rating)}</span></td><td>${f.joined}</td><td>${statusPill(f.status)}</td><td><button class="act-icon" onclick="editFarmer(${f.id})" title="Edit">✏️</button><button class="act-icon" onclick="deleteFarmer(${f.id})" title="Delete">🗑️</button>${f.status==='Pending'?`<button class="act-icon" onclick="verifyFarmer(${f.id})" title="Verify">✅</button>`:''}</td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-light)">No farmers match your filters</td></tr>';
+  document.getElementById('farmerPagination').innerHTML=paginationHTML(data.length,farmerPage,PAGE_SIZE,'setFarmerPage');
+  updateBadges();
+}
+window.setFarmerPage=function(p){farmerPage=p;renderFarmers();};
+function clearFarmerFilters(){document.getElementById('farmerSearch').value='';document.getElementById('farmerCatFilter').value='';document.getElementById('farmerStatusFilter').value='';farmerPage=1;renderFarmers();}
+function openAddFarmer(){document.getElementById('farmerModalTitle').textContent='Add Farmer';document.getElementById('farmerEditId').value='';['fName','fLoc','fPhone','fEmail'].forEach(id=>document.getElementById(id).value='');document.getElementById('fCat').value='Fruits';document.getElementById('fStatus').value='Pending';openModal('modalFarmer');}
+function editFarmer(id){const f=farmers.find(x=>x.id===id);if(!f)return;document.getElementById('farmerModalTitle').textContent='Edit Farmer';document.getElementById('farmerEditId').value=id;document.getElementById('fName').value=f.name;document.getElementById('fLoc').value=f.loc;document.getElementById('fPhone').value=f.phone;document.getElementById('fEmail').value=f.email;document.getElementById('fCat').value=f.cat;document.getElementById('fStatus').value=f.status;openModal('modalFarmer');}
+function saveFarmer(){const name=document.getElementById('fName').value.trim();const loc=document.getElementById('fLoc').value.trim();if(!name||!loc){showToast('Name and location are required','error');return;}const id=parseInt(document.getElementById('farmerEditId').value);const data={name,loc,cat:document.getElementById('fCat').value,phone:document.getElementById('fPhone').value,email:document.getElementById('fEmail').value,status:document.getElementById('fStatus').value,revenue:0,rating:0,joined:new Date().toISOString().slice(0,10),sales:'0 kg'};if(id){const idx=farmers.findIndex(f=>f.id===id);Object.assign(farmers[idx],data);showToast('Farmer updated','success');}else{farmers.push({id:Date.now(),...data});showToast('Farmer added','success');}closeModal('modalFarmer');renderFarmers();}
+function deleteFarmer(id){confirmAction('Delete Farmer?','This will permanently remove the farmer and their listings.',()=>{farmers=farmers.filter(f=>f.id!==id);renderFarmers();showToast('Farmer deleted','success');});}
+function verifyFarmer(id){const f=farmers.find(x=>x.id===id);if(!f)return;f.status='Active';renderFarmers();showToast(`${f.name} verified successfully!`,'success');updateBadges();}
+
+/* ══ PRODUCTS CRUD ══ */
+function renderProducts(){
+  const q=(document.getElementById('productSearch').value||'').toLowerCase();
+  const cat=document.getElementById('productCatFilter').value;
+  const st=document.getElementById('productStatusFilter').value;
+  let data=products.filter(p=>{if(q&&!p.name.toLowerCase().includes(q)&&!p.farmer.toLowerCase().includes(q))return false;if(cat&&p.cat!==cat)return false;if(st&&p.status!==st)return false;return true;});
+  document.getElementById('productCount').textContent=`${data.length} product${data.length!==1?'s':''} found`;
+  const paged=paginate(data,productPage);
+  document.getElementById('productsBody').innerHTML=paged.length?paged.map(p=>`<tr><td><strong>${p.name}</strong></td><td>${catBadge(p.cat)}</td><td>${p.farmer}</td><td>${fmt(p.price)}/${p.unit}</td><td>${p.stock>0?p.stock+' '+p.unit:'<span style="color:var(--red)">Out of stock</span>'}</td><td>${p.sales.toLocaleString('en-IN')}</td><td>${statusPill(p.status)}</td><td><button class="act-icon" onclick="editProduct(${p.id})" title="Edit">✏️</button><button class="act-icon" onclick="deleteProduct(${p.id})" title="Delete">🗑️</button></td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-light)">No products match your filters</td></tr>';
+  document.getElementById('productPagination').innerHTML=paginationHTML(data.length,productPage,PAGE_SIZE,'setProductPage');
+}
+window.setProductPage=function(p){productPage=p;renderProducts();};
+function clearProductFilters(){document.getElementById('productSearch').value='';document.getElementById('productCatFilter').value='';document.getElementById('productStatusFilter').value='';productPage=1;renderProducts();}
+function openAddProduct(){document.getElementById('productModalTitle').textContent='Add Product';document.getElementById('productEditId').value='';['pName','pPrice','pUnit','pStock'].forEach(id=>document.getElementById(id).value='');document.getElementById('pCat').value='Fruits';document.getElementById('pStatus').value='Active';const sel=document.getElementById('pFarmer');sel.innerHTML=farmers.map(f=>`<option>${f.name}</option>`).join('');openModal('modalProduct');}
+function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;document.getElementById('productModalTitle').textContent='Edit Product';document.getElementById('productEditId').value=id;document.getElementById('pName').value=p.name;document.getElementById('pCat').value=p.cat;document.getElementById('pPrice').value=p.price;document.getElementById('pUnit').value=p.unit;document.getElementById('pStock').value=p.stock;document.getElementById('pStatus').value=p.status;const sel=document.getElementById('pFarmer');sel.innerHTML=farmers.map(f=>`<option ${f.name===p.farmer?'selected':''}>${f.name}</option>`).join('');openModal('modalProduct');}
+function saveProduct(){const name=document.getElementById('pName').value.trim();const price=parseFloat(document.getElementById('pPrice').value);if(!name||!price){showToast('Product name and price are required','error');return;}const id=parseInt(document.getElementById('productEditId').value);const data={name,cat:document.getElementById('pCat').value,price,unit:document.getElementById('pUnit').value||'unit',stock:parseInt(document.getElementById('pStock').value)||0,status:document.getElementById('pStatus').value,farmer:document.getElementById('pFarmer').value,sales:0};if(id){const idx=products.findIndex(p=>p.id===id);Object.assign(products[idx],data);showToast('Product updated','success');}else{products.push({id:Date.now(),...data});showToast('Product added','success');}closeModal('modalProduct');renderProducts();}
+function deleteProduct(id){confirmAction('Delete Product?','This will permanently remove this product listing.',()=>{products=products.filter(p=>p.id!==id);renderProducts();showToast('Product deleted','success');});}
+
+/* ══ ORDERS ══ */
+function renderOrders(){
+  const q=(document.getElementById('orderSearch').value||'').toLowerCase();
+  const st=document.getElementById('orderStatusFilter').value;
+  const cat=document.getElementById('orderCatFilter').value;
+  let data=orders.filter(o=>{if(q&&!o.id.toLowerCase().includes(q)&&!o.customer.toLowerCase().includes(q))return false;if(st&&o.status!==st)return false;if(cat&&o.cat!==cat)return false;return true;});
+  document.getElementById('orderCount').textContent=`${data.length} order${data.length!==1?'s':''} found`;
+  const paged=paginate(data,orderPage);
+  document.getElementById('ordersBody').innerHTML=paged.length?paged.map(o=>`<tr><td><strong>${o.id}</strong></td><td>${o.customer}</td><td>${o.product}</td><td>${catBadge(o.cat)}</td><td>${o.farmer}</td><td><strong>${fmt(o.amount)}</strong></td><td>${o.date}</td><td>${statusPill(o.status)}</td><td><button class="act-icon" onclick="viewOrder('${o.id}')" title="View">👁️</button>${o.status==='Disputed'?`<button class="act-icon" onclick="openDisputeForOrder('${o.id}')" title="Resolve">⚠️</button>`:''}</td></tr>`).join(''):'<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text-light)">No orders match your filters</td></tr>';
+  document.getElementById('orderPagination').innerHTML=paginationHTML(data.length,orderPage,PAGE_SIZE,'setOrderPage');
+}
+window.setOrderPage=function(p){orderPage=p;renderOrders();};
+function clearOrderFilters(){document.getElementById('orderSearch').value='';document.getElementById('orderStatusFilter').value='';document.getElementById('orderCatFilter').value='';orderPage=1;renderOrders();}
+function viewOrder(id){
+  currentOrderId=id;const o=orders.find(x=>x.id===id);if(!o)return;
+  document.getElementById('orderModalTitle').textContent=`Order ${o.id}`;
+  document.getElementById('orderModalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;"><div class="mini-stat"><div class="ms-lbl">Customer</div><div class="ms-val" style="font-size:.95rem">${o.customer}</div></div><div class="mini-stat"><div class="ms-lbl">Amount</div><div class="ms-val">${fmt(o.amount)}</div></div><div class="mini-stat"><div class="ms-lbl">Product</div><div class="ms-val" style="font-size:.85rem">${o.product}</div></div><div class="mini-stat"><div class="ms-lbl">Farmer</div><div class="ms-val" style="font-size:.95rem">${o.farmer}</div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--green-faint);border-radius:10px;border:1px solid var(--border);"><div style="flex:1"><div style="font-size:.75rem;color:var(--text-light);margin-bottom:3px;">Category</div>${catBadge(o.cat)}</div><div style="flex:1"><div style="font-size:.75rem;color:var(--text-light);margin-bottom:3px;">Date</div><div style="font-size:.84rem;font-weight:600;">${o.date}</div></div><div><div style="font-size:.75rem;color:var(--text-light);margin-bottom:3px;">Status</div>${statusPill(o.status)}</div></div>`;
+  const ab=document.getElementById('orderActionBtn');
+  if(o.status==='In Transit'||o.status==='Processing'){ab.textContent='Mark Delivered';ab.style.display='';ab.onclick=updateOrderStatus;}
+  else if(o.status==='Disputed'){ab.textContent='Resolve Dispute';ab.style.display='';ab.onclick=()=>{closeModal('modalOrder');openDisputeForOrder(id);};}
+  else{ab.style.display='none';}
+  openModal('modalOrder');
+}
+function updateOrderStatus(){const o=orders.find(x=>x.id===currentOrderId);if(!o)return;o.status='Delivered';closeModal('modalOrder');renderOrders();showToast(`Order ${o.id} marked as Delivered`,'success');updateBadges();}
+function openDisputeForOrder(orderId){const d=disputes.find(x=>x.orderId===orderId);if(d){document.getElementById('disputeEditId').value=d.id;openModal('modalDispute');}else showToast('No dispute found for this order','error');}
+
+/* ══ CUSTOMERS ══ */
+function renderCustomers(){
+  const q=(document.getElementById('customerSearch').value||'').toLowerCase();
+  const st=document.getElementById('customerStatusFilter').value;
+  let data=customers.filter(c=>{if(q&&!c.name.toLowerCase().includes(q)&&!c.email.toLowerCase().includes(q))return false;if(st&&c.status!==st)return false;return true;});
+  document.getElementById('customerCount').textContent=`${data.length} customer${data.length!==1?'s':''} found`;
+  const paged=paginate(data,customerPage);
+  document.getElementById('customersBody').innerHTML=paged.length?paged.map(c=>`<tr><td><div class="farmer-cell"><div class="f-av" style="background:var(--blue-pale);color:var(--blue)">👤</div><div><div class="f-name">${c.name}</div></div></div></td><td>${c.email}</td><td>📍 ${c.city}</td><td>${c.orders}</td><td><strong>${fmt(c.spent)}</strong></td><td>${c.joined}</td><td>${statusPill(c.status)}</td><td><button class="act-icon" onclick="toggleCustomer(${c.id})" title="${c.status==='Active'?'Deactivate':'Activate'}">${c.status==='Active'?'🚫':'✅'}</button></td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-light)">No customers found</td></tr>';
+  document.getElementById('customerPagination').innerHTML=paginationHTML(data.length,customerPage,PAGE_SIZE,'setCustomerPage');
+}
+window.setCustomerPage=function(p){customerPage=p;renderCustomers();};
+function clearCustomerFilters(){document.getElementById('customerSearch').value='';document.getElementById('customerStatusFilter').value='';customerPage=1;renderCustomers();}
+function toggleCustomer(id){const c=customers.find(x=>x.id===id);if(!c)return;c.status=c.status==='Active'?'Inactive':'Active';renderCustomers();showToast(`${c.name} ${c.status==='Active'?'activated':'deactivated'}`,'success');}
+
+/* ══ DISPUTES ══ */
+function renderDisputes(){
+  document.getElementById('disputeCount').textContent=`${disputes.length} dispute${disputes.length!==1?'s':''}`;
+  document.getElementById('disputesBody').innerHTML=disputes.map(d=>`<tr><td><strong>${d.id}</strong></td><td>${d.orderId}</td><td>${d.customer}</td><td>${d.farmer}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.issue}</td><td>${d.date}</td><td>${statusPill(d.status)}</td><td>${d.status==='Open'?`<button class="act-icon" onclick="openDisputeModal('${d.id}')" title="Resolve">⚠️</button>`:'<span style="color:var(--text-light);font-size:.78rem">Resolved</span>'}</td></tr>`).join('');
+}
+function openDisputeModal(id){document.getElementById('disputeEditId').value=id;document.getElementById('disputeNotes').value='';openModal('modalDispute');}
+function resolveDispute(){const id=document.getElementById('disputeEditId').value;const d=disputes.find(x=>x.id===id);if(!d)return;d.status='Resolved';const o=orders.find(x=>x.id===d.orderId);if(o)o.status='Delivered';closeModal('modalDispute');renderDisputes();renderOrders();updateBadges();showToast(`Dispute ${id} resolved successfully`,'success');}
+
+/* ══ NOTIFICATIONS ══ */
+function renderNotifications(){document.getElementById('notifList').innerHTML=notifications.map((n,i)=>`<li class="alert-item" style="${n.read?'opacity:.55':''}"><div class="al-dot" style="background:${n.color}"></div><div class="al-body"><div class="al-msg">${n.msg}</div><div class="al-time">${n.time}</div></div>${!n.read?`<button class="al-act" onclick="markRead(${i})">Mark read</button>`:''}</li>`).join('');}
+function markRead(i){notifications[i].read=true;renderNotifications();}
+function markAllRead(){notifications.forEach(n=>n.read=true);renderNotifications();showToast('All notifications marked as read','success');}
+
+/* ══ CONFIRM ══ */
+let confirmCb=null;
+function confirmAction(title,msg,cb){document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmMsg').textContent=msg;confirmCb=cb;document.getElementById('confirmOkBtn').onclick=()=>{closeModal('modalConfirm');if(confirmCb)confirmCb();};openModal('modalConfirm');}
+
+/* ══ GLOBAL SEARCH ══ */
+function globalSearchFn(q){
+  if(!q)return;q=q.toLowerCase();
+  if(farmers.some(f=>f.name.toLowerCase().includes(q))){document.getElementById('farmerSearch').value=q;navigate('farmers',null);return;}
+  if(products.some(p=>p.name.toLowerCase().includes(q))){document.getElementById('productSearch').value=q;navigate('products',null);return;}
+  if(orders.some(o=>o.id.toLowerCase().includes(q)||o.customer.toLowerCase().includes(q))){document.getElementById('orderSearch').value=q;navigate('orders',null);return;}
+}
+
+/* ══ BADGES ══ */
+function updateBadges(){
+  document.getElementById('nb-farmers').textContent=farmers.filter(f=>f.status==='Pending').length;
+  document.getElementById('nb-disputes').textContent=disputes.filter(d=>d.status==='Open').length;
+  document.getElementById('nb-orders').textContent=orders.filter(o=>o.status==='Processing'||o.status==='In Transit').length;
+  const kd=document.getElementById('kpi-disputes');if(kd)kd.textContent=disputes.filter(d=>d.status==='Open').length;
+  const kf=document.getElementById('kpi-farmers-pend');if(kf)kf.textContent=farmers.filter(f=>f.status==='Pending').length;
+}
+
+/* ══ INIT ══ */
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+initOverviewCharts();
+updateBadges();
+</script>
+</body>
+</html>

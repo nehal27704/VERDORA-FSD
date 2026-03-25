@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Login | Verdora</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'DM Sans', sans-serif;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: #0d3314; /* Verdora Darkest Green */
+}
+
+/* ── SCENE ── */
+.scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ── SLIDESHOW BACKGROUND ── */
+.slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: slideShow 24s infinite;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* Consumer-focused fresh produce & lifestyle images */
+.slide:nth-child(1) {
+  background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=80');
+  animation-delay: 0s;
+}
+.slide:nth-child(2) {
+  background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1600&q=80');
+  animation-delay: 6s;
+}
+.slide:nth-child(3) {
+  background-image: url('https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1600&q=80');
+  animation-delay: 12s;
+}
+.slide:nth-child(4) {
+  background-image: url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=1600&q=80');
+  animation-delay: 18s;
+}
+
+@keyframes slideShow {
+  0%   { opacity: 0; transform: scale(1); }
+  5%   { opacity: 1; }
+  25%  { opacity: 1; transform: scale(1.06); }
+  30%  { opacity: 0; transform: scale(1.08); }
+  100% { opacity: 0; }
+}
+
+/* ── DARK GREEN GRADIENT OVERLAY ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    135deg,
+    rgba(13, 51, 20, 0.82) 0%,
+    rgba(27, 94, 32, 0.65) 50%,
+    rgba(46, 125, 50, 0.55) 100%
+  );
+}
+
+/* ── FLOATING IMAGE TILES ── */
+.tiles {
+  position: absolute;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 14px;
+  width: 520px;
+  animation: fadeUp 1s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(calc(-50% + 30px)); }
+  to   { opacity: 1; transform: translateY(-50%); }
+}
+
+.tile {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.tile img { width: 100%; height: 100%; object-fit: cover; transition: 6s; }
+.tile:hover img { transform: scale(1.05); }
+
+.tile:nth-child(1) { grid-column:1; grid-row:1/3; height: 440px; }
+.tile:nth-child(2) { grid-column:2; grid-row:1;   height: 213px; }
+.tile:nth-child(3) { grid-column:2; grid-row:2;   height: 213px; }
+
+.tile-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(6px);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1b5e20;
+}
+
+/* Floating badge */
+.floating-badge {
+  position: absolute;
+  bottom: -16px;
+  left: -16px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 6;
+  animation: floatBadge 4s ease-in-out infinite;
+}
+
+@keyframes floatBadge {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.badge-icon { font-size: 1.5rem; }
+.badge-text strong { font-size: 0.85rem; color: #1a2e1a; display: block; }
+.badge-text span   { font-size: 0.72rem; color: #7a9a77; }
+
+/* ── LOGO TOP LEFT ── */
+.top-logo {
+  position: fixed;
+  top: 18px; left: 22px;
+  z-index: 20;
+}
+
+.top-logo span {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.top-logo span em { font-style: normal; color: #a5d6a7; }
+
+/* ── LOGIN BOX ── */
+.login-box {
+  position: absolute;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+  padding: 42px 36px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  z-index: 10;
+  text-align: center;
+  animation: floatBox 6s ease-in-out infinite;
+}
+
+@keyframes floatBox {
+  0%, 100% { transform: translateY(-50%); }
+  50%      { transform: translateY(-53%); }
+}
+
+.login-box h2 {
+  color: #ffffff;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  margin-bottom: 28px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 14px 18px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.login-box input::placeholder { color: rgba(255,255,255,0.5); }
+
+.login-box input:focus {
+  background: rgba(255,255,255,0.22);
+  border-color: #a5d6a7;
+  box-shadow: 0 0 0 3px rgba(165,214,167,0.1);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, #66bb6a, #43a047);
+}
+
+.signup-link {
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.signup-link a {
+  color: #a5d6a7;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.8rem;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: 0.3s;
+}
+
+.back-link:hover { color: #ffffff; border-bottom-color: #a5d6a7; }
+
+/* ── MARQUEE STRIP ── */
+.marquee-strip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 5;
+  background: rgba(13, 51, 20, 0.9);
+  padding: 12px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-track {
+  display: inline-flex;
+  animation: marquee 30s linear infinite;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 35px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.marquee-dot { width: 6px; height: 6px; background: #f9a825; border-radius: 50%; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (max-width: 768px) {
+  .tiles { display: none; }
+  .login-box { right: 50%; transform: translate(50%, -50%); width: 92%; }
+}
+</style>
+</head>
+
+<body>
+<div class="scene">
+
+  <div class="slideshow">
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+
+  <div class="overlay"></div>
+
+  <div class="tiles">
+    <div class="tile">
+      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80" alt="Market basket"/>
+      <span class="tile-label">Fresh Selection</span>
+    </div>
+    <div class="tile">
+      <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80" alt="Salad bowl"/>
+      <span class="tile-label">Healthy Choices</span>
+    </div>
+    <div class="tile">
+      <img src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80" alt="Cooking"/>
+      <span class="tile-label">Farm to Table</span>
+    </div>
+
+    <div class="floating-badge">
+      <div class="badge-icon">🥗</div>
+      <div class="badge-text">
+        <strong>Healthy Eating</strong>
+        <span>Certified Organic</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="top-logo">
+    <span>Ver<em>dora</em></span>
+  </div>
+
+  <div class="login-box">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to your Verdora account.</p>
+
+    <form id="userLoginForm">
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit">Start Shopping</button>
+    </form>
+
+    <p class="signup-link">New here? <a href="useregistration.html">Create an account</a></p>
+
+    <a class="back-link" href="landingpage.html">← Back to Home</a>
+  </div>
+
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Free Delivery on ₹499+</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Direct Farm to Table</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Verified Quality Standards</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Eco-friendly Packaging</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Free Delivery on ₹499+</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#1b5e20">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Verdora — Farm Fresh, Direct to You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --green-darkest: #0d3314;
+      --green-dark:    #1b5e20;
+      --green-mid:     #2e7d32;
+      --green:         #43a047;
+      --green-light:   #81c784;
+      --green-pale:    #e8f5e9;
+      --gold:          #f9a825;
+      --orange:        #e65100;
+      --slate:         #1c313a;
+      --cream:         #fdfaf4;
+      --text-dark:     #1a2e1a;
+      --text-mid:      #4a6741;
+      --text-light:    #7a9a77;
+      --white:         #ffffff;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    button, input[type="submit"] {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input, textarea {
+      font-size: 16px !important;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      padding: 0 5%; height: 72px;
+      display: -webkit-flex;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(253,250,244,0.88);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(102,187,106,0.2);
+      transition: box-shadow var(--transition);
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+    .nav-logo { font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; color: var(--green-dark); }
+    .nav-logo span { color: var(--green); }
+    .nav-links { display: -webkit-flex; display: flex; gap: 34px; list-style: none; }
+    .nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--text-mid); transition: color var(--transition); }
+    .nav-links a:hover { color: var(--green-dark); }
+    .nav-cta { display: -webkit-flex; display: flex; gap: 12px; align-items: center; }
+    .btn-outline { padding:9px 22px; border:1.5px solid var(--green-mid); border-radius:50px; font-size:0.88rem; font-weight:500; color:var(--green-mid); transition:all var(--transition); }
+    .btn-outline:hover { background:var(--green-mid); color:var(--white); }
+    .btn-solid { padding:9px 22px; background:linear-gradient(135deg,var(--green),var(--green-mid)); border-radius:50px; font-size:0.88rem; font-weight:500; color:var(--white); box-shadow:0 4px 14px rgba(46,125,50,0.35); transition:all var(--transition); }
+    .btn-solid:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(46,125,50,0.45); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: -webkit-grid;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 100px 5% 60px;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #f0faf0 0%, #e8f5e9 50%, #c8e6c9 100%);
+    }
+    .hero::before {
+      content:''; position:absolute; width:700px; height:700px; border-radius:50%;
+      background:radial-gradient(circle, rgba(102,187,106,0.18), transparent 70%);
+      right:-150px; top:-150px; pointer-events:none;
+    }
+    .hero-content { position:relative; z-index:2; }
+    .hero-badge {
+      display:-webkit-inline-flex;
+      display:inline-flex;
+      align-items:center; gap:7px;
+      background:rgba(255,255,255,0.8); border:1px solid rgba(102,187,106,0.4);
+      padding:6px 16px; border-radius:50px; font-size:0.8rem; font-weight:500;
+      color:var(--green-mid); margin-bottom:24px;
+      -webkit-animation: fadeUp 0.6s ease both;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-title {
+      font-family:var(--font-display); font-size:clamp(2.4rem,4.5vw,3.8rem);
+      font-weight:900; line-height:1.1; color:var(--green-darkest);
+      margin-bottom:20px;
+      -webkit-animation:fadeUp 0.6s 0.1s ease both;
+      animation:fadeUp 0.6s 0.1s ease both;
+    }
+    .hero-title em { font-style:italic; color:var(--green); }
+    .hero-sub {
+      font-size:1.05rem; line-height:1.7; color:var(--text-mid);
+      max-width:480px; margin-bottom:36px; font-weight:300;
+      -webkit-animation:fadeUp 0.6s 0.2s ease both;
+      animation:fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-btns {
+      display:-webkit-flex;
+      display:flex;
+      gap:14px; flex-wrap:wrap;
+      -webkit-animation:fadeUp 0.6s 0.3s ease both;
+      animation:fadeUp 0.6s 0.3s ease both;
+    }
+    .hero-btn-primary {
+      padding:15px 34px; background:linear-gradient(135deg,var(--green),var(--green-dark));
+      border:none; border-radius:50px; color:var(--white); font-family:var(--font-body);
+      font-size:1rem; font-weight:600; cursor:pointer;
+      box-shadow:0 8px 24px rgba(46,125,50,0.4); transition:all var(--transition);
+      display:-webkit-inline-flex;
+      display:inline-flex;
+      align-items:center; gap:8px;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .hero-btn-primary:hover { transform:translateY(-3px); box-shadow:0 14px 32px rgba(46,125,50,0.5); }
+    .hero-btn-secondary {
+      padding:15px 30px; background:rgba(255,255,255,0.7);
+      border:1.5px solid rgba(102,187,106,0.5); border-radius:50px;
+      color:var(--green-dark); font-family:var(--font-body); font-size:1rem;
+      font-weight:500; cursor:pointer;
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      transition:all var(--transition);
+      display:-webkit-inline-flex;
+      display:inline-flex;
+      align-items:center; gap:8px;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .hero-btn-secondary:hover { background:rgba(255,255,255,0.95); transform:translateY(-3px); }
+    .hero-stats {
+      display:-webkit-flex;
+      display:flex;
+      gap:32px; margin-top:48px;
+      -webkit-animation:fadeUp 0.6s 0.4s ease both;
+      animation:fadeUp 0.6s 0.4s ease both;
+    }
+    .stat-num { font-family:var(--font-display); font-size:1.8rem; font-weight:900; color:var(--green-dark); }
+    .stat-label { font-size:0.78rem; color:var(--text-light); }
+
+    .hero-visual {
+      position:relative; z-index:2;
+      display:-webkit-grid;
+      display:grid;
+      grid-template-columns:1fr 1fr; grid-template-rows:auto auto;
+      gap:14px; padding-left:32px;
+      -webkit-animation:fadeUp 0.7s 0.2s ease both;
+      animation:fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-img-card { border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-md); position:relative; }
+    .hero-img-card img { width:100%; height:100%; object-fit:cover; transition:-webkit-transform 0.6s ease; transition:transform 0.6s ease; font-family:'object-fit: cover'; }
+    .hero-img-card:hover img { -webkit-transform:scale(1.05); transform:scale(1.05); }
+    .hero-img-card:nth-child(1) { grid-column:1; grid-row:1/3; height:380px; }
+    .hero-img-card:nth-child(2) { grid-column:2; grid-row:1; height:180px; }
+    .hero-img-card:nth-child(3) { grid-column:2; grid-row:2; height:186px; }
+    .img-label {
+      position:absolute; bottom:12px; left:12px;
+      background:rgba(255,255,255,0.9);
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      border-radius:8px; padding:5px 12px; font-size:0.78rem; font-weight:600; color:var(--green-dark);
+    }
+    .hero-floating-card {
+      position:absolute; bottom:-20px; left:-20px;
+      background:var(--white); border-radius:12px; padding:14px 18px;
+      box-shadow:var(--shadow-md);
+      display:-webkit-flex;
+      display:flex;
+      align-items:center; gap:12px;
+      z-index:5;
+      -webkit-animation:floatY 4s ease-in-out infinite;
+      animation:floatY 4s ease-in-out infinite;
+    }
+    @-webkit-keyframes floatY { 0%,100%{-webkit-transform:translateY(0);transform:translateY(0)} 50%{-webkit-transform:translateY(-8px);transform:translateY(-8px)} }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .hfc-icon { font-size:1.8rem; }
+    .hfc-text strong { font-size:0.9rem; color:var(--text-dark); display:block; }
+    .hfc-text span { font-size:0.75rem; color:var(--text-light); }
+
+    /* ── MARQUEE ── */
+    .marquee-strip { background:var(--green-dark); padding:14px 0; overflow:hidden; white-space:nowrap; }
+    .marquee-track {
+      display:-webkit-inline-flex;
+      display:inline-flex;
+      -webkit-animation:marquee 28s linear infinite;
+      animation:marquee 28s linear infinite;
+    }
+    .marquee-item { display:-webkit-inline-flex; display:inline-flex; align-items:center; gap:10px; padding:0 32px; font-size:0.88rem; font-weight:500; color:rgba(255,255,255,0.85); }
+    .marquee-dot { width:6px; height:6px; background:var(--gold); border-radius:50%; flex-shrink:0; }
+    @-webkit-keyframes marquee { from{-webkit-transform:translateX(0);transform:translateX(0)} to{-webkit-transform:translateX(-50%);transform:translateX(-50%)} }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SECTION COMMONS ── */
+    .section { padding:90px 5%; }
+    .section-tag { display:inline-block; background:var(--green-pale); color:var(--green-mid); font-size:0.78rem; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; padding:5px 14px; border-radius:50px; margin-bottom:14px; }
+    .section-title { font-family:var(--font-display); font-size:clamp(1.8rem,3vw,2.7rem); font-weight:900; color:var(--text-dark); line-height:1.2; margin-bottom:14px; }
+    .section-sub { font-size:1rem; color:var(--text-mid); font-weight:300; line-height:1.7; max-width:520px; }
+    .section-head { margin-bottom:54px; }
+
+    /* ── FEATURES ── */
+    .features-grid { display:-webkit-grid; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .feature-card {
+      background:var(--white); border-radius:var(--radius-md); padding:36px 28px;
+      box-shadow:var(--shadow-sm); border:1px solid rgba(102,187,106,0.12);
+      transition:all var(--transition); position:relative; overflow:hidden;
+    }
+    .feature-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:4px;
+      background:linear-gradient(90deg,var(--green-light),var(--green)); opacity:0; transition:opacity var(--transition);
+    }
+    .feature-card:hover { -webkit-transform:translateY(-6px); transform:translateY(-6px); box-shadow:var(--shadow-md); }
+    .feature-card:hover::before { opacity:1; }
+    .feature-icon { width:56px; height:56px; border-radius:16px; background:var(--green-pale); display:-webkit-flex; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:20px; }
+    .feature-title { font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--text-dark); margin-bottom:10px; }
+    .feature-desc { font-size:0.9rem; color:var(--text-mid); line-height:1.65; font-weight:300; }
+
+    /* ── PRODUCTS ── */
+    .products-section { background:var(--green-pale); padding:90px 5%; }
+    .products-header { display:-webkit-flex; display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:42px; flex-wrap:wrap; gap:20px; }
+    .view-all { display:-webkit-inline-flex; display:inline-flex; align-items:center; gap:6px; color:var(--green-mid); font-size:0.92rem; font-weight:600; border-bottom:1.5px solid var(--green-light); padding-bottom:2px; transition:all var(--transition); }
+    .view-all:hover { color:var(--green-dark); }
+    .products-grid { display:-webkit-grid; display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    .product-card { background:var(--white); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); transition:all var(--transition); cursor:pointer; }
+    .product-card:hover { -webkit-transform:translateY(-5px); transform:translateY(-5px); box-shadow:var(--shadow-md); }
+    .product-img { height:200px; overflow:hidden; position:relative; }
+    .product-img img { width:100%; height:100%; object-fit:cover; transition:-webkit-transform 0.5s ease; transition:transform 0.5s ease; font-family:'object-fit: cover'; }
+    .product-card:hover .product-img img { -webkit-transform:scale(1.08); transform:scale(1.08); }
+    .product-badge { position:absolute; top:12px; left:12px; background:var(--gold); color:var(--white); font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:50px; }
+    .product-badge.organic { background:var(--green); }
+    .product-info { padding:18px; }
+    .product-name { font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--text-dark); margin-bottom:4px; }
+    .product-origin { font-size:0.78rem; color:var(--text-light); margin-bottom:10px; }
+    .product-footer { display:-webkit-flex; display:flex; align-items:center; justify-content:space-between; }
+    .product-price { font-size:1.05rem; font-weight:600; color:var(--green-dark); }
+    .product-price .unit { font-size:0.75rem; font-weight:400; color:var(--text-light); }
+    .add-btn { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--green-dark)); border:none; color:var(--white); font-size:1.1rem; cursor:pointer; display:-webkit-flex; display:flex; align-items:center; justify-content:center; transition:all var(--transition); box-shadow:0 4px 12px rgba(46,125,50,0.3); -webkit-appearance:none; appearance:none; }
+    .add-btn:hover { -webkit-transform:scale(1.15); transform:scale(1.15); }
+
+    /* ── PROMO ── */
+    .promo-section { display:-webkit-grid; display:grid; grid-template-columns:1fr 1fr; min-height:480px; }
+    .promo-left {
+      background:linear-gradient(135deg,var(--green-darkest),var(--green-dark));
+      padding:70px 8%; display:-webkit-flex; display:flex; flex-direction:column; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    .promo-left::before { content:''; position:absolute; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(102,187,106,0.15),transparent 70%); right:-100px; bottom:-100px; }
+    .promo-left .section-tag { background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9); }
+    .promo-left .section-title { color:var(--white); }
+    .promo-left .section-sub { color:rgba(255,255,255,0.7); max-width:380px; }
+    .promo-left-btn { margin-top:32px; display:-webkit-inline-flex; display:inline-flex; align-items:center; gap:10px; padding:14px 30px; background:var(--gold); border:none; border-radius:50px; color:var(--green-darkest); font-family:var(--font-body); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all var(--transition); box-shadow:0 6px 20px rgba(249,168,37,0.4); width:-webkit-fit-content; width:fit-content; -webkit-appearance:none; appearance:none; }
+    .promo-left-btn:hover { -webkit-transform:translateY(-3px); transform:translateY(-3px); box-shadow:0 10px 28px rgba(249,168,37,0.5); }
+    .promo-right { position:relative; overflow:hidden; }
+    .promo-right img { width:100%; height:100%; object-fit:cover; font-family:'object-fit: cover'; }
+    .promo-right-overlay { position:absolute; inset:0; background:linear-gradient(to right,rgba(13,51,20,0.5),transparent); }
+
+    /* ── REGISTER SECTION ── */
+    .register-section { padding:90px 5%; text-align:center; background:var(--cream); }
+    .register-cards { display:-webkit-grid; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:960px; margin:0 auto; }
+    .reg-card { border-radius:var(--radius-lg); padding:44px 32px 36px; text-align:center; position:relative; overflow:hidden; transition:all var(--transition); cursor:pointer; }
+    .reg-card:hover { -webkit-transform:translateY(-8px); transform:translateY(-8px); }
+    .reg-card-farmer { background:linear-gradient(160deg,#e8f5e9,#c8e6c9); border:1.5px solid rgba(102,187,106,0.4); box-shadow:0 8px 32px rgba(46,125,50,0.12); }
+    .reg-card-user { background:linear-gradient(160deg,#fff8e1,#ffecb3); border:1.5px solid rgba(249,168,37,0.4); box-shadow:0 8px 32px rgba(249,168,37,0.12); }
+    .reg-card-admin { background:linear-gradient(160deg,#eceff1,#cfd8dc); border:1.5px solid rgba(55,71,79,0.25); box-shadow:0 8px 32px rgba(28,49,58,0.12); }
+    .reg-card-glow { position:absolute; width:180px; height:180px; border-radius:50%; top:-60px; right:-60px; pointer-events:none; }
+    .farmer-glow { background:radial-gradient(circle,rgba(102,187,106,0.25),transparent 70%); }
+    .user-glow   { background:radial-gradient(circle,rgba(249,168,37,0.25),transparent 70%); }
+    .admin-glow  { background:radial-gradient(circle,rgba(55,71,79,0.15),transparent 70%); }
+    .reg-icon { font-size:3rem; margin-bottom:18px; display:block; }
+    .reg-title { font-family:var(--font-display); font-size:1.3rem; font-weight:900; margin-bottom:10px; }
+    .reg-card-farmer .reg-title { color:var(--green-darkest); }
+    .reg-card-user   .reg-title { color:#6d4c0a; }
+    .reg-card-admin  .reg-title { color:var(--slate); }
+    .reg-desc { font-size:0.87rem; line-height:1.6; font-weight:300; margin-bottom:28px; }
+    .reg-card-farmer .reg-desc { color:var(--green-mid); }
+    .reg-card-user   .reg-desc { color:#9e6a12; }
+    .reg-card-admin  .reg-desc { color:#4a6070; }
+    .reg-perks { list-style:none; margin-bottom:30px; text-align:left; }
+    .reg-perks li { display:-webkit-flex; display:flex; align-items:center; gap:8px; font-size:0.83rem; padding:4px 0; }
+    .reg-card-farmer .reg-perks li { color:var(--green-mid); }
+    .reg-card-user   .reg-perks li { color:#9e6a12; }
+    .reg-card-admin  .reg-perks li { color:#4a6070; }
+    .perk-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .farmer-dot { background:var(--green); }
+    .user-dot   { background:var(--gold); }
+    .admin-dot  { background:var(--slate); }
+    .reg-btn { width:100%; padding:14px; border:none; border-radius:12px; font-family:var(--font-body); font-size:0.95rem; font-weight:600; cursor:pointer; transition:all var(--transition); display:-webkit-flex; display:flex; align-items:center; justify-content:center; gap:8px; -webkit-appearance:none; appearance:none; }
+    .reg-btn-farmer { background:linear-gradient(135deg,var(--green),var(--green-dark)); color:var(--white); box-shadow:0 6px 20px rgba(46,125,50,0.35); }
+    .reg-btn-farmer:hover { -webkit-transform:translateY(-2px); transform:translateY(-2px); box-shadow:0 10px 28px rgba(46,125,50,0.45); }
+    .reg-btn-user { background:linear-gradient(135deg,#ffb300,var(--orange)); color:var(--white); box-shadow:0 6px 20px rgba(230,81,0,0.3); }
+    .reg-btn-user:hover { -webkit-transform:translateY(-2px); transform:translateY(-2px); box-shadow:0 10px 28px rgba(230,81,0,0.4); }
+    .reg-btn-admin { background:linear-gradient(135deg,#546e7a,var(--slate)); color:#e8f5e9; box-shadow:0 6px 20px rgba(0,0,0,0.25); }
+    .reg-btn-admin:hover { -webkit-transform:translateY(-2px); transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.35); }
+    .login-prompt { margin-top:32px; font-size:0.9rem; color:var(--text-light); }
+    .login-prompt a { color:var(--green-mid); font-weight:600; border-bottom:1.5px solid var(--green-light); }
+
+    /* ── TRUST ── */
+    .trust-strip { padding:50px 5%; background:var(--white); display:-webkit-flex; display:flex; align-items:center; justify-content:space-around; gap:24px; flex-wrap:wrap; border-top:1px solid rgba(102,187,106,0.15); border-bottom:1px solid rgba(102,187,106,0.15); }
+    .trust-item { display:-webkit-flex; display:flex; align-items:center; gap:12px; color:var(--text-mid); }
+    .trust-icon { font-size:1.8rem; }
+    .trust-label strong { display:block; font-size:0.9rem; font-weight:600; color:var(--text-dark); }
+    .trust-label span { font-size:0.78rem; color:var(--text-light); }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-section { padding:90px 5%; background:linear-gradient(180deg,var(--green-pale) 0%,var(--cream) 100%); }
+    .testimonials-grid { display:-webkit-grid; display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .testimonial-card { background:var(--white); border-radius:var(--radius-md); padding:32px; box-shadow:var(--shadow-sm); border:1px solid rgba(102,187,106,0.12); transition:all var(--transition); }
+    .testimonial-card:hover { -webkit-transform:translateY(-4px); transform:translateY(-4px); box-shadow:var(--shadow-md); }
+    .stars { color:var(--gold); font-size:1rem; margin-bottom:14px; letter-spacing:2px; }
+    .testimonial-text { font-size:0.92rem; line-height:1.7; color:var(--text-mid); font-style:italic; margin-bottom:20px; font-weight:300; }
+    .testimonial-author { display:-webkit-flex; display:flex; align-items:center; gap:12px; }
+    .author-avatar { width:42px; height:42px; border-radius:50%; background:var(--green-pale); display:-webkit-flex; display:flex; align-items:center; justify-content:center; font-size:1.1rem; border:2px solid rgba(102,187,106,0.3); }
+    .author-name { font-size:0.88rem; font-weight:600; color:var(--text-dark); }
+    .author-role { font-size:0.75rem; color:var(--text-light); }
+
+    /* ── NEWSLETTER ── */
+    .newsletter-section { padding:80px 5%; text-align:center; background:var(--green-darkest); position:relative; overflow:hidden; }
+    .newsletter-section::before { content:''; position:absolute; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(102,187,106,0.12),transparent 70%); left:-200px; top:-200px; }
+    .newsletter-inner { position:relative; z-index:2; max-width:560px; margin:0 auto; }
+    .newsletter-section .section-tag { background:rgba(255,255,255,0.1); color:var(--green-light); }
+    .newsletter-section .section-title { color:var(--white); }
+    .newsletter-section .section-sub { color:rgba(255,255,255,0.6); margin:0 auto 36px; }
+    .newsletter-form { display:-webkit-flex; display:flex; gap:10px; max-width:420px; margin:0 auto; }
+    .newsletter-input {
+      flex:1; padding:14px 20px; border-radius:50px;
+      border:1.5px solid rgba(255,255,255,0.2);
+      background:rgba(255,255,255,0.08); color:var(--white);
+      font-family:var(--font-body); font-size:16px !important;
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      outline:none; transition:border-color var(--transition);
+      -webkit-appearance:none; appearance:none;
+    }
+    .newsletter-input::placeholder { color:rgba(255,255,255,0.4); }
+    .newsletter-input:focus { border-color:var(--green-light); }
+    .newsletter-btn { padding:14px 26px; border:none; border-radius:50px; background:var(--gold); color:var(--green-darkest); font-family:var(--font-body); font-size:0.92rem; font-weight:700; cursor:pointer; transition:all var(--transition); white-space:nowrap; -webkit-appearance:none; appearance:none; }
+    .newsletter-btn:hover { -webkit-transform:translateY(-2px); transform:translateY(-2px); box-shadow:0 8px 20px rgba(249,168,37,0.4); }
+
+    /* ── FOOTER ── */
+    footer { background:#0a2410; padding:60px 5% 30px; color:rgba(255,255,255,0.55); }
+    .footer-grid { display:-webkit-grid; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; margin-bottom:50px; }
+    .footer-brand p { font-size:0.88rem; line-height:1.7; max-width:240px; margin-top:14px; }
+    .footer-socials { display:-webkit-flex; display:flex; gap:12px; margin-top:20px; }
+    .social-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); display:-webkit-flex; display:flex; align-items:center; justify-content:center; font-size:0.95rem; transition:all var(--transition); cursor:pointer; }
+    .social-btn:hover { background:var(--green-mid); border-color:var(--green-mid); }
+    .footer-col h4 { color:var(--white); font-size:0.88rem; font-weight:600; letter-spacing:0.5px; margin-bottom:18px; }
+    .footer-col ul { list-style:none; }
+    .footer-col ul li { margin-bottom:10px; }
+    .footer-col ul li a { font-size:0.85rem; color:rgba(255,255,255,0.5); transition:color var(--transition); }
+    .footer-col ul li a:hover { color:var(--green-light); }
+    .footer-bottom { border-top:1px solid rgba(255,255,255,0.08); padding-top:24px; display:-webkit-flex; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; flex-wrap:wrap; gap:12px; }
+    .footer-bottom a { color:var(--green-light); }
+
+    /* ── ANIMATIONS ── */
+    @-webkit-keyframes fadeUp { from{opacity:0;-webkit-transform:translateY(24px);transform:translateY(24px)} to{opacity:1;-webkit-transform:translateY(0);transform:translateY(0)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity:0; -webkit-transform:translateY(28px); transform:translateY(28px); transition:opacity 0.65s ease, -webkit-transform 0.65s ease; transition:opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity:1; -webkit-transform:translateY(0); transform:translateY(0); }
+
+    /* ── WINDOWS HIGH CONTRAST ── */
+    @media (forced-colors: active) {
+      .btn-solid, .hero-btn-primary, .reg-btn-farmer, .reg-btn-user, .reg-btn-admin, .newsletter-btn {
+        border: 2px solid ButtonText;
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1024px){
+      .products-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr;padding-top:100px}
+      .hero-visual{display:none}
+      .features-grid{grid-template-columns:1fr}
+      .products-grid{grid-template-columns:1fr 1fr}
+      .promo-section{grid-template-columns:1fr}
+      .promo-right{height:260px}
+      .register-cards{grid-template-columns:1fr;max-width:380px}
+      .testimonials-grid{grid-template-columns:1fr}
+      .footer-grid{grid-template-columns:1fr;gap:28px}
+      .nav-links{display:none}
+      .newsletter-form{-webkit-flex-direction:column;flex-direction:column}
+      .newsletter-input,.newsletter-btn{border-radius:12px}
+    }
+    @media(max-width:480px){
+      .products-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Ver<span>dora</span></a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#farmers">For Farmers</a></li>
+    <li><a href="#register">Join Us</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="signin.html" class="btn-outline">Sign In</a>
+    <a href="#register" class="btn-solid">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Trusted by 12,000+ farmers across India</div>
+    <h1 class="hero-title">Farm Fresh,<br/><em>Straight</em> to Your<br/>Doorstep</h1>
+    <p class="hero-sub">Verdora bridges the gap between local farmers and consumers. Buy seasonal produce directly from the source — fresher, fairer, and faster.</p>
+    <div class="hero-btns">
+      <a href="#products" class="hero-btn-primary">Shop Now</a>
+      <a href="#how-it-works" class="hero-btn-secondary">▶ How it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-label">Farmers Connected</div></div>
+      <div class="stat"><div class="stat-num">98K+</div><div class="stat-label">Happy Customers</div></div>
+      <div class="stat"><div class="stat-num">340+</div><div class="stat-label">Cities Served</div></div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-img-card">
+      <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80" alt="Fresh vegetables"/>
+      <span class="img-label">Seasonal Vegetables</span>
+    </div>
+    <div class="hero-img-card">
+      <img src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&q=80" alt="Farm field"/>
+      <span class="img-label">Direct from Farm</span>
+    </div>
+    <div class="hero-img-card">
+      <img src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=400&q=80" alt="Fresh fruits"/>
+      <span class="img-label">Certified Organic</span>
+    </div>
+    <div class="hero-floating-card">
+      <div class="hfc-icon">🚚</div>
+      <div class="hfc-text"><strong>Same-day Delivery</strong><span>Harvested this morning</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Free Delivery on Orders ₹499+</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Straight from Farm to Table</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Support Local Farmers</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No Middlemen. Better Prices.</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Freshness Guaranteed</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>12,000+ Verified Farmers</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>100% Organic Produce</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Free Delivery on Orders ₹499+</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Straight from Farm to Table</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Support Local Farmers</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No Middlemen. Better Prices.</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Freshness Guaranteed</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>12,000+ Verified Farmers</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-head reveal">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-title">From Soil to Your Table<br/>in 3 Simple Steps</h2>
+    <p class="section-sub">We cut out the middlemen and connect you directly with the farmers who grow your food.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">🌾</div>
+      <div class="feature-title">Farmers List Their Harvest</div>
+      <p class="feature-desc">Registered farmers upload their fresh produce daily — with quantity, pricing, and farm location. Full transparency from the source.</p>
+    </div>
+    <div class="feature-card reveal" style="transition-delay:0.1s">
+      <div class="feature-icon">🛒</div>
+      <div class="feature-title">You Browse & Order</div>
+      <p class="feature-desc">Shop seasonal produce filtered by location, organic certification, or category. Pay securely online with multiple payment options.</p>
+    </div>
+    <div class="feature-card reveal" style="transition-delay:0.2s">
+      <div class="feature-icon">🚚</div>
+      <div class="feature-title">Fast & Fresh Delivery</div>
+      <p class="feature-desc">Orders are picked, packed, and dispatched the same day. Cold-chain logistics ensure your produce arrives crisp and fresh.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section" id="products">
+  <div class="products-header reveal">
+    <div>
+      <div class="section-tag">Fresh Today</div>
+      <h2 class="section-title">Today's Harvest</h2>
+    </div>
+    <a href="productss.html" class="view-all">View all products →</a>
+  </div>
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-img">
+        <img src="tomatoes.png" alt="Tomatoes"/>
+        <span class="product-badge organic">Organic</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Desi Tomatoes</div>
+        <div class="product-origin">📍 Nashik, Maharashtra</div>
+        <div class="product-footer">
+          <div class="product-price">₹32 <span class="unit">/ kg</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.08s">
+      <div class="product-img">
+        <img src="babyspinach.webp" alt="Spinach"/>
+        <span class="product-badge organic">Organic</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Baby Spinach</div>
+        <div class="product-origin">📍 Ooty, Tamil Nadu</div>
+        <div class="product-footer">
+          <div class="product-price">₹28 <span class="unit">/ bunch</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.16s">
+      <div class="product-img">
+        <img src="alphonso mango.jpg" alt="Mangoes"/>
+        <span class="product-badge" style="background:#e65100">Seasonal</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Alphonso Mangoes</div>
+        <div class="product-origin">📍 Ratnagiri, Maharashtra</div>
+        <div class="product-footer">
+          <div class="product-price">₹480 <span class="unit">/ dozen</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal" style="transition-delay:0.24s">
+      <div class="product-img">
+        <img src="carrot.webp" alt="Carrots"/>
+        <span class="product-badge organic">Organic</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Red Carrots</div>
+        <div class="product-origin">📍 Pune, Maharashtra</div>
+        <div class="product-footer">
+          <div class="product-price">₹44 <span class="unit">/ kg</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT PROMO -->
+<div class="promo-section" id="farmers">
+  <div class="promo-left">
+    <div class="section-tag">For Farmers</div>
+    <h2 class="section-title">Grow More.<br/>Earn More.<br/>Waste Less.</h2>
+    <p class="section-sub">List your produce directly on Verdora and reach thousands of buyers across India. No middlemen, no haggling — just fair prices and faster payments.</p>
+    <a href="farmregister.html" class="promo-left-btn" onclick="window.location.href='farmregister.html'; return false;">🌾 Join as a Farmer →</a>
+  </div>
+  <div class="promo-right">
+    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80" alt="Farmer in field"/>
+    <div class="promo-right-overlay"></div>
+  </div>
+</div>
+
+<!-- REGISTER CARDS -->
+<section class="register-section" id="register">
+  <div class="section-head reveal">
+    <div class="section-tag">Get Started</div>
+    <h2 class="section-title">Join Verdora Today</h2>
+    <p class="section-sub" style="margin:0 auto">Choose your role and start your journey towards a fresher, fairer food system.</p>
+  </div>
+  <div class="register-cards">
+
+    <div class="reg-card reg-card-farmer reveal">
+      <div class="reg-card-glow farmer-glow"></div>
+      <div class="reg-title">I'm a Farmer</div>
+      <p class="reg-desc">List your produce and connect with buyers directly across India.</p>
+      <ul class="reg-perks">
+        <li><span class="perk-dot farmer-dot"></span>List unlimited products</li>
+        <li><span class="perk-dot farmer-dot"></span>Get paid within 24 hours</li>
+        <li><span class="perk-dot farmer-dot"></span>Reach 98,000+ buyers</li>
+        <li><span class="perk-dot farmer-dot"></span>Free farmer support line</li>
+      </ul>
+      <a href="farmregister.html" class="reg-btn reg-btn-farmer" onclick="window.location.href='farmregister.html'; return false;">Register as a Farmer</a>
+    </div>
+
+    <div class="reg-card reg-card-user reveal" style="transition-delay:0.12s">
+      <div class="reg-card-glow user-glow"></div>
+      <div class="reg-title">I'm a Buyer</div>
+      <p class="reg-desc">Order fresh, organic produce delivered straight to your door.</p>
+      <ul class="reg-perks">
+        <li><span class="perk-dot user-dot"></span>Same-day delivery</li>
+        <li><span class="perk-dot user-dot"></span>Freshness guarantee</li>
+        <li><span class="perk-dot user-dot"></span>Seasonal harvest alerts</li>
+        <li><span class="perk-dot user-dot"></span>Loyalty rewards program</li>
+      </ul>
+      <a href="useregistration.html" class="reg-btn reg-btn-user">Register as a User</a>
+    </div>
+
+    <div class="reg-card reg-card-admin reveal" style="transition-delay:0.24s">
+      <div class="reg-card-glow admin-glow"></div>
+      <div class="reg-title">I'm an Admin</div>
+      <p class="reg-desc">Manage the platform, verify farmers, and oversee all operations.</p>
+      <ul class="reg-perks">
+        <li><span class="perk-dot admin-dot"></span>Full platform dashboard</li>
+        <li><span class="perk-dot admin-dot"></span>Farmer verification tools</li>
+        <li><span class="perk-dot admin-dot"></span>Analytics & reporting</li>
+        <li><span class="perk-dot admin-dot"></span>Dispute resolution panel</li>
+      </ul>
+      <a href="adminregister.html" class="reg-btn reg-btn-admin">Register as an Admin</a>
+    </div>
+
+  </div>
+  <p class="login-prompt">Already have an account? <a href="adminlogin.html">Sign in here</a></p>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip reveal">
+  <div class="trust-item"><span class="trust-icon">🔒</span><div class="trust-label"><strong>Secure Payments</strong><span>256-bit SSL encryption</span></div></div>
+  <div class="trust-item"><span class="trust-icon">✅</span><div class="trust-label"><strong>Verified Farmers</strong><span>Government ID verified</span></div></div>
+  <div class="trust-item"><span class="trust-icon">🌱</span><div class="trust-label"><strong>Certified Organic</strong><span>PGS-India certified</span></div></div>
+  <div class="trust-item"><span class="trust-icon">↩️</span><div class="trust-label"><strong>Easy Returns</strong><span>Freshness not met? Refunded.</span></div></div>
+  <div class="trust-item"><span class="trust-icon">📞</span><div class="trust-label"><strong>24/7 Support</strong><span>Call, chat, or email us</span></div></div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="section-head reveal" style="text-align:center">
+    <div class="section-tag">What People Say</div>
+    <h2 class="section-title">Loved by Farmers<br/>& Foodies Alike</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"I sold my entire tomato harvest in 3 days. No more dealing with mandi agents. My income has genuinely doubled since I joined Verdora."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨‍🌾</div>
+        <div><div class="author-name">Ravi Shankar</div><div class="author-role">Tomato Farmer · Nashik</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal" style="transition-delay:0.12s">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"The vegetables are so fresh — I can actually taste the difference. Knowing exactly which farm my food comes from is incredibly reassuring."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩</div>
+        <div><div class="author-name">Priya Nair</div><div class="author-role">Regular Customer · Bangalore</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal" style="transition-delay:0.24s">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"Running a restaurant, freshness is everything. Verdora lets me source directly from farms and plan my menu around what's in season."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨‍🍳</div>
+        <div><div class="author-name">Arjun Mehta</div><div class="author-role">Chef & Restaurant Owner · Mumbai</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section">
+  <div class="newsletter-inner">
+    <div class="section-tag">Stay Connected</div>
+    <h2 class="section-title">Get Weekly Harvest Updates</h2>
+    <p class="section-sub">Be the first to know what's in season, get exclusive deals, and seasonal recipes delivered to your inbox.</p>
+    <div class="newsletter-form">
+      <input class="newsletter-input" type="email" placeholder="Enter your email address"/>
+      <button class="newsletter-btn" id="subBtn">Subscribe →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#81c784">Ver<span style="color:#43a047">dora</span></div>
+      <p>Bridging the gap between local farmers and consumers across India. Fresh, fair, and direct.</p>
+      <div class="footer-socials">
+        <div class="social-btn">𝕏</div>
+        <div class="social-btn">f</div>
+        <div class="social-btn">in</div>
+        <div class="social-btn">📸</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>For Buyers</h4>
+      <ul>
+        <li><a href="#">Browse Products</a></li>
+        <li><a href="#">How to Order</a></li>
+        <li><a href="#">Delivery Info</a></li>
+        <li><a href="#">Returns Policy</a></li>
+        <li><a href="#">Track Order</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>For Farmers</h4>
+      <ul>
+        <li><a href="farmerlogin.html">Register as Farmer</a></li>
+        <li><a href="#">List Products</a></li>
+        <li><a href="#">Farmer Support</a></li>
+        <li><a href="#">Payment Info</a></li>
+        <li><a href="#">Success Stories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Verdora. All rights reserved.</span>
+    <span><a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></span>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll shadow
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20));
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Add to cart
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.textContent = '✓';
+      this.style.background = 'linear-gradient(135deg,#66bb6a,#43a047)';
+      setTimeout(() => { this.textContent = '+'; this.style.background = ''; }, 1200);
+    });
+  });
+
+  // Newsletter
+  document.getElementById('subBtn').addEventListener('click', function() {
+    const input = document.querySelector('.newsletter-input');
+    if (input.value.includes('@')) {
+      this.textContent = '✓ Subscribed!';
+      this.style.background = '#66bb6a';
+      input.value = '';
+      setTimeout(() => { this.textContent = 'Subscribe →'; this.style.background = ''; }, 3000);
+    } else {
+      input.style.borderColor = '#ef5350';
+      setTimeout(() => input.style.borderColor = '', 1500);
+    }
+  });
+</script>
+</body>
+</html>
