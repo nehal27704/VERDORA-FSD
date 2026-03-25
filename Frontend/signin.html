@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — Verdora</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-darkest: #0d3314;
+      --green-dark:    #1b5e20;
+      --green-mid:     #2e7d32;
+      --green:         #43a047;
+      --green-pale:    #e8f5e9;
+      --gold:          #f9a825;
+      --slate:         #1c313a;
+      --cream:         #fdfaf4;
+      --white:         #ffffff;
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --radius-lg: 28px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--green-darkest);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .nav-logo { 
+      font-family: var(--font-display); 
+      font-size: 2rem; 
+      font-weight: 900; 
+      color: var(--green-dark); 
+      margin-bottom: 40px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--green); }
+
+    .header-text { text-align: center; margin-bottom: 50px; }
+    .header-text h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 10px; }
+    .header-text p { color: var(--green-mid); font-size: 1.1rem; }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    /* Reusing your card styles */
+    .choice-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 40px 30px;
+      text-align: center;
+      transition: all var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      border: 1.5px solid rgba(102,187,106,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .choice-card:hover { transform: translateY(-10px); box-shadow: 0 15px 45px rgba(46,125,50,0.15); border-color: var(--green-light); }
+    
+    .icon { font-size: 3.5rem; margin-bottom: 20px; display: block; }
+    .title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; margin-bottom: 15px; color: var(--green-darkest); }
+    .desc { font-size: 0.95rem; color: var(--green-mid); margin-bottom: 30px; line-height: 1.6; }
+
+    .btn {
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    /* Specific Button Themes */
+    .btn-user   { background: var(--gold); color: var(--green-darkest); }
+    .btn-farmer { background: var(--green); color: var(--white); }
+    .btn-admin  { background: var(--slate); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .choice-grid { grid-template-columns: 1fr; max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="landingpage.html" class="nav-logo">Ver<span>dora</span></a>
+
+  <div class="header-text">
+    <h1>Welcome Back</h1>
+    <p>Please select your account type to continue</p>
+  </div>
+
+  <div class="choice-grid">
+    <a href="userlogin.html" class="choice-card">
+      <div>
+        <span class="icon">🛒</span>
+        <div class="title">Buyer</div>
+        <p class="desc">Access your orders, track deliveries, and shop fresh produce.</p>
+      </div>
+      <span class="btn btn-user">Sign In as Buyer</span>
+    </a>
+
+    <a href="farmerlogin.html" class="choice-card">
+      <div>
+        <span class="icon">👨‍🌾</span>
+        <div class="title">Farmer</div>
+        <p class="desc">Manage your inventory, check earnings, and list new harvests.</p>
+      </div>
+      <span class="btn btn-farmer">Sign In as Farmer</span>
+    </a>
+
+    <a href="adminlogin.html" class="choice-card">
+      <div>
+        <span class="icon">🛡️</span>
+        <div class="title">Admin</div>
+        <p class="desc">Monitor platform activity, verify farmers, and resolve disputes.</p>
+      </div>
+      <span class="btn btn-admin">Sign In as Admin</span>
+    </a>
+  </div>
+
+  <p style="margin-top: 40px; color: var(--green-mid); font-size: 0.9rem;">
+    New to Verdora? <a href="landingpage.html#register" style="color: var(--green); font-weight: 700; text-decoration: underline;">Create an account</a>
+  </p>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#1b5e20">
+  <title>About Verdora — Our Roots & Mission</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --green-darkest: #0d3314;
+      --green-dark:    #1b5e20;
+      --green-mid:     #2e7d32;
+      --green:         #43a047;
+      --green-light:   #81c784;
+      --green-pale:    #e8f5e9;
+      --gold:          #f9a825;
+      --orange:        #e65100;
+      --slate:         #1c313a;
+      --cream:         #fdfaf4;
+      --text-dark:     #1a2e1a;
+      --text-mid:      #4a6741;
+      --text-light:    #7a9a77;
+      --white:         #ffffff;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-md: 18px;
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--text-dark);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── REUSED NAVBAR ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      padding: 0 5%; height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(253,250,244,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(102,187,106,0.2);
+    }
+    .nav-logo { font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; color: var(--green-dark); }
+    .nav-logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 34px; list-style: none; }
+    .nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--text-mid); }
+    .btn-solid { padding:9px 22px; background:linear-gradient(135deg,var(--green),var(--green-mid)); border-radius:50px; font-size:0.88rem; font-weight:500; color:var(--white); box-shadow:0 4px 14px rgba(46,125,50,0.35); }
+
+    /* ── ABOUT HERO ── */
+    .about-hero {
+      padding: 160px 5% 100px;
+      text-align: center;
+      background: linear-gradient(180deg, #e8f5e9 0%, var(--cream) 100%);
+    }
+    .section-tag { display:inline-block; background:var(--green-pale); color:var(--green-mid); font-size:0.78rem; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; padding:5px 14px; border-radius:50px; margin-bottom:14px; }
+    .hero-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem); color: var(--green-darkest); margin-bottom: 20px; }
+
+    /* ── MISSION SECTION ── */
+    .mission-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      padding: 80px 5%;
+      align-items: center;
+    }
+    .mission-img { width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+    .mission-text h2 { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 20px; color: var(--green-darkest); }
+    .mission-text p { color: var(--text-mid); margin-bottom: 20px; font-size: 1.1rem; }
+
+    /* ── VALUES GRID ── */
+    .values-section { background: var(--white); padding: 100px 5%; text-align: center; }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 50px;
+    }
+    .value-card {
+      padding: 40px;
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+    .value-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-md); }
+    .value-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+    .value-card h3 { font-family: var(--font-display); margin-bottom: 15px; color: var(--green-dark); }
+
+    /* ── ANIMATIONS ── */
+    .reveal { opacity:0; transform:translateY(28px); transition: 0.65s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ── FOOTER REUSED ── */
+    footer { background:#0a2410; padding:60px 5% 30px; color:rgba(255,255,255,0.55); margin-top: 100px; }
+
+    @media(max-width: 768px) {
+      .mission-container { grid-template-columns: 1fr; }
+      .values-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="landingpage.html" class="nav-logo">Ver<span>dora</span></a>
+  <ul class="nav-links">
+    <li><a href="landingpage.html#how-it-works">How It Works</a></li>
+    <li><a href="landingpage.html#products">Products</a></li>
+    <li><a href="about.html" style="color: var(--green-dark)">Our Story</a></li>
+  </ul>
+  <a href="landingpage.html#register" class="btn-solid">Get Started</a>
+</nav>
+
+<section class="about-hero">
+  <div class="reveal">
+    <div class="section-tag">Our Roots</div>
+    <h1 class="hero-title">Growing a Fairer<br>Food Future</h1>
+    <p style="max-width: 600px; margin: 0 auto; color: var(--text-mid);">Founded in 2024, Verdora was born out of a simple question: why does fresh food have to travel thousands of miles and pass through dozens of hands before reaching you?</p>
+  </div>
+</section>
+
+<section class="mission-container">
+  <img src="https://images.unsplash.com/photo-1595667944391-4975e27dcedb?w=800&q=80" class="mission-img reveal" alt="Farmer holding produce">
+  <div class="mission-text reveal">
+    <h2>Our Mission</h2>
+    <p>We aim to empower 100,000+ local farmers by giving them the digital tools to sell directly to their communities.</p>
+    <p>By eliminating the middlemen, we ensure that farmers earn more for their hard work, and you receive produce that was literally in the ground just hours before it arrived at your door.</p>
+  </div>
+</section>
+
+<section class="values-section">
+  <div class="reveal">
+    <div class="section-tag">What We Stand For</div>
+    <h2 style="font-family: var(--font-display); font-size: 2.5rem;">The Verdora Promise</h2>
+  </div>
+  <div class="values-grid">
+    <div class="value-card reveal">
+      <span class="value-icon">🌿</span>
+      <h3>Radial Transparency</h3>
+      <p>Every vegetable has a story. We track every item back to the specific farm it was grown on.</p>
+    </div>
+    <div class="value-card reveal" style="transition-delay: 0.1s;">
+      <span class="value-icon">🤝</span>
+      <h3>Fairer Trade</h3>
+      <p>We ensure farmers receive payments within 24 hours, helping them sustain their livelihoods.</p>
+    </div>
+    <div class="value-card reveal" style="transition-delay: 0.2s;">
+      <span class="value-icon">🌍</span>
+      <h3>Earth First</h3>
+      <p>By shortening the supply chain, we drastically reduce carbon emissions and plastic waste.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <div class="nav-logo" style="color:#81c784">Ver<span style="color:#43a047">dora</span></div>
+    <p style="margin-top: 10px;">© 2025 Verdora. Freshness guaranteed.</p>
+  </div>
+</footer>
+
+<script>
+  // Reusing your Scroll Reveal Logic
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
