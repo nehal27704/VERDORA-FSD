@@ -67,6 +67,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 ROOT_URLCONF = 'verdora.urls'
 
 TEMPLATES = [
@@ -92,8 +94,12 @@ WSGI_APPLICATION = 'verdora.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'verdora',          # Your database name
+        'USER': 'root',             # Your MySQL username
+        'PASSWORD': 'bhAVi@12O4', # Your MySQL password
+        'HOST': 'localhost',        # Usually localhost
+        'PORT': '3306',             # Default MySQL port
     }
 }
 
